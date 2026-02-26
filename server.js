@@ -99,13 +99,34 @@ function processar_proxima_tarefa() {
 // === GESTÃO DE WEBSOCKETS (FRONTEND vs ROBÔ) ===
 io.on('connection', (socket) => {
     
-    // O Python deve emitir 'sou_o_robo' assim que ligar
+   // O Python deve emitir 'sou_o_robo' assim que ligar
     socket.on('sou_o_robo', () => {
         bot_socket_id = socket.id;
-        estado_global.status = 'ocioso';
+        estado_global.status = 'desligado'; // Ele conecta, mas espera você mandar Ligar!
         console.log("🤖 Robô Local Conectado ao Servidor Cloud! ID:", bot_socket_id);
-        notificar_todos("Robô operacional e ligado à nuvem!");
-        processar_proxima_tarefa(); // Verifica se há trabalho atrasado
+        notificar_todos("Robô operacional e conectado! Aguardando o Início do Servidor.");
+    });
+
+    // Quando o robô local termina um evento, ele avisa a nuvem
+    socket.on('tarefa_concluida', (dados) => {
+        const { evento, sucesso, erro } = dados;
+        
+        if (sucesso) {
+            if (evento !== 'Login do Robô') estado_global.historico_respondidos.push(evento);
+            notificar_todos(`✔️ ${evento} concluído com sucesso!`);
+            estado_global.status = 'ocioso'; // SÓ AQUI ele libera os botões de Extrair!
+        } else {
+            if (evento !== 'Login do Robô') estado_global.historico_respondidos.push(`${evento} (Falhou)`);
+            notificar_todos(`❌ Erro no ${evento}: ${erro}`);
+            
+            // Se o login falhar, volta para a estaca zero para você poder tentar de novo
+            if (evento === 'Login do Robô') {
+                estado_global.status = 'desligado';
+            } else {
+                estado_global.status = 'ocioso';
+            }
+        }
+        processar_proxima_tarefa(); 
     });
 
     // Os utilizadores que abrirem o site emitem 'sou_frontend'
