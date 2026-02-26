@@ -163,9 +163,14 @@ io.on('connection', (socket) => {
         }
     });
 
-    // Comandos diretos dos botões (Ligar, Extrair, Verificar, Parar)
-    socket.on('comando_direto', (dados) => {
+   socket.on('comando_direto', (dados) => {
         if (bot_socket_id) {
+            // CORREÇÃO: Bloqueia o site de todos os usuários INSTANTANEAMENTE
+            if (dados.modo === 'extrair' || dados.modo === 'verificar') {
+                estado_global.status = dados.modo;
+                notificar_todos(`Iniciando modo: ${dados.modo.toUpperCase()}...`);
+            }
+            // Manda a ordem para o Python
             io.to(bot_socket_id).emit('comando_para_robo', dados);
         }
     });
