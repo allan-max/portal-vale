@@ -3,93 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel do Robô Coupa (Enterprise)</title>
+    <title>Assistente Vale | Compras</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            --bg-body: #0f172a;
-            --bg-card: #1e293b;
-            --border-color: #334155;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --success: #10b981;
-            --success-hover: #059669;
-            --warning: #f59e0b;
-            --warning-hover: #d97706;
-            --danger: #ef4444;
-            --danger-hover: #dc2626;
-            --purple: #8b5cf6;
-            --purple-hover: #7c3aed;
+            /* Paleta Light / Clean */
+            --bg-body: #f4f7fb;
+            --bg-card: #ffffff;
+            --text-title: #2b3648;
+            --text-main: #4a5568;
+            --text-muted: #a0aec0;
+            --border-color: #e2e8f0;
+            
+            /* Cores de Ação Suaves */
+            --primary: #4299e1;
+            --primary-hover: #3182ce;
+            --success: #48bb78;
+            --success-hover: #38a169;
+            --warning: #ed8936;
+            --warning-hover: #dd6b20;
+            --danger: #f56565;
+            --danger-hover: #e53e3e;
+            --purple: #9f7aea;
+            --purple-hover: #805ad5;
+            
+            --shadow-sm: 0 4px 6px rgba(0,0,0,0.02);
+            --shadow-md: 0 10px 20px rgba(0,0,0,0.05);
         }
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-main); margin: 0; padding: 40px 20px; display: flex; justify-content: center; }
         .container { width: 100%; max-width: 900px; }
         
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { font-size: 28px; font-weight: 700; margin: 0; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .header h1 i { color: var(--primary); }
+        /* Cabeçalho Amigável */
+        .header { text-align: center; margin-bottom: 35px; }
+        .header h1 { font-family: 'Nunito', sans-serif; font-size: 32px; font-weight: 800; color: var(--text-title); margin: 0; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .header h1 i { color: var(--primary); background: #ebf8ff; padding: 12px; border-radius: 16px; font-size: 24px;}
+        .subtitle { color: var(--text-muted); font-size: 16px; margin-top: 8px; font-weight: 500; }
         
-        .badge { background: var(--warning); color: #fff; padding: 4px 12px; border-radius: 999px; font-size: 14px; font-weight: 700; display: none; margin-left: 10px; box-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+        .badge { background: #feebc8; color: #dd6b20; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; display: none; margin-left: 10px; border: 1px solid #fbd38d;}
 
-        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        /* Cartões Clean */
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 20px; padding: 30px; margin-bottom: 25px; box-shadow: var(--shadow-md); transition: all 0.3s ease; }
+        .card-title { font-family: 'Nunito', sans-serif; font-size: 20px; font-weight: 700; color: var(--text-title); margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid #f7fafc; padding-bottom: 15px;}
         
-        /* Botões */
-        .btn { padding: 12px 20px; font-size: 15px; font-weight: 600; border: none; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-        .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        /* Botões Arredondados e Modernos */
+        .btn { font-family: 'Nunito', sans-serif; padding: 14px 24px; font-size: 16px; font-weight: 700; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 10px; box-shadow: var(--shadow-sm); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; box-shadow: none; }
+        .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
         
-        .btn-large { width: 100%; font-size: 18px; padding: 16px; margin-bottom: 10px; }
+        .btn-large { width: 100%; font-size: 18px; padding: 18px; margin-bottom: 10px; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-success { background: var(--success); color: white; }
         .btn-warning { background: var(--warning); color: white; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-purple { background: var(--purple); color: white; }
         
-        .botoes-acao { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px; }
+        .botoes-acao { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 25px; }
 
-        /* Formulários */
-        .form-container { display: none; margin-top: 25px; padding-top: 25px; border-top: 1px solid var(--border-color); }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .form-group { margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; font-weight: 500; margin-bottom: 8px; color: var(--text-muted); font-size: 14px; }
-        .form-group input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-body); color: white; font-size: 14px; box-sizing: border-box; outline: none; transition: 0.2s; font-family: 'Inter', sans-serif;}
-        .form-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
+        /* Formulários Limpos */
+        .form-container { display: none; margin-top: 30px; padding-top: 30px; border-top: 2px dashed var(--border-color); }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: var(--text-title); font-size: 14px; }
+        .form-group input { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #edf2f7; background: #f7fafc; color: var(--text-title); font-size: 15px; box-sizing: border-box; outline: none; transition: 0.2s; font-family: 'Inter', sans-serif;}
+        .form-group input:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.15); }
         
-        .caixa-item { background: rgba(15, 23, 42, 0.5); border: 1px dashed var(--border-color); padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        .caixa-item-titulo { color: var(--success); font-weight: 600; margin-bottom: 10px; display: block;}
+        /* Caixas de Itens mais amigáveis */
+        .caixa-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 16px; margin-bottom: 15px; }
+        .caixa-item-titulo { color: var(--primary); font-weight: 700; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; font-family: 'Nunito', sans-serif;}
+        .caixa-item-titulo i { background: white; padding: 6px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);}
 
-        /* Inputs de Arquivo Customizados */
-        input[type=file]::file-selector-button { border: none; background: var(--border-color); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-right: 15px; transition: 0.2s; font-weight: 500;}
-        input[type=file]::file-selector-button:hover { background: #475569; }
+        /* Estilização de Arquivos */
+        input[type=file]::file-selector-button { border: none; background: #edf2f7; color: var(--text-title); padding: 10px 18px; border-radius: 8px; cursor: pointer; margin-right: 15px; transition: 0.2s; font-weight: 600; font-family: 'Inter', sans-serif;}
+        input[type=file]::file-selector-button:hover { background: #e2e8f0; }
         
-        .arquivo-item { background: var(--bg-body); padding: 8px 12px; margin: 8px 0; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; border: 1px solid var(--border-color); }
-        .btn-remover { background: transparent; border: none; color: var(--danger); cursor: pointer; font-size: 16px; padding: 0 5px; }
-        .btn-remover:hover { color: var(--danger-hover); }
+        .arquivo-item { background: white; padding: 10px 15px; margin: 8px 0; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .arquivo-item span { display: flex; align-items: center; gap: 10px; font-weight: 500;}
+        .btn-remover { background: #fff5f5; border: 1px solid #fed7d7; color: var(--danger); cursor: pointer; font-size: 14px; padding: 6px 10px; border-radius: 6px; transition: 0.2s;}
+        .btn-remover:hover { background: #fed7d7; }
 
-        /* Terminal Log */
-        .terminal { background: #000; border-radius: 8px; padding: 0; overflow: hidden; border: 1px solid #333; margin-top: 20px;}
-        .terminal-header { background: #333; padding: 8px 15px; display: flex; gap: 6px; align-items: center;}
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
-        .dot.red { background: #ff5f56; } .dot.yellow { background: #ffbd2e; } .dot.green { background: #27c93f; }
-        #log { padding: 15px; font-family: 'Courier New', Courier, monospace; color: #00ff00; font-size: 14px; text-align: left; margin: 0;}
+        /* Nova Central de Notificações (Antigo Terminal) */
+        .notificacoes { background: white; border-radius: 16px; padding: 20px; border: 1px solid var(--border-color); margin-top: 20px; display: flex; align-items: center; gap: 15px; box-shadow: var(--shadow-sm);}
+        .status-dot { width: 12px; height: 12px; background-color: var(--success); border-radius: 50%; box-shadow: 0 0 0 4px rgba(72, 187, 120, 0.2); animation: pulse 2s infinite; flex-shrink: 0;}
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0.4); } 70% { box-shadow: 0 0 0 8px rgba(72, 187, 120, 0); } 100% { box-shadow: 0 0 0 0 rgba(72, 187, 120, 0); } }
+        .status-dot.offline { background-color: var(--danger); box-shadow: 0 0 0 4px rgba(245, 101, 101, 0.2); animation: none; }
+        #log { margin: 0; font-size: 15px; color: var(--text-main); font-weight: 500; }
 
-        /* Painel de Progresso */
+        /* Painel de Progresso Visual */
         #painel-progresso { display: none; }
         .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px; }
-        .status-box { background: var(--bg-body); border-radius: 8px; padding: 15px; border: 1px solid var(--border-color); text-align: left;}
-        .status-box h4 { margin: 0 0 15px 0; display: flex; align-items: center; gap: 8px; }
+        .status-box { background: #f8fafc; border-radius: 16px; padding: 20px; border: 1px solid var(--border-color); text-align: left;}
+        .status-box h4 { margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px; font-family: 'Nunito', sans-serif; font-size: 16px; color: var(--text-title);}
         .status-box ul { list-style: none; padding: 0; margin: 0; }
-        .status-box ul li { padding: 8px 0; border-bottom: 1px solid var(--border-color); font-size: 14px; display: flex; align-items: center; gap: 8px;}
-        .status-box ul li:last-child { border-bottom: none; }
+        .status-box ul li { padding: 12px; background: white; border-radius: 10px; margin-bottom: 8px; font-size: 14px; display: flex; align-items: center; gap: 10px; border: 1px solid #edf2f7; font-weight: 500;}
+        .status-box ul li:last-child { margin-bottom: 0; }
 
-        /* Captcha */
-        #area-captcha { display: none; border-color: var(--danger); }
-        #imagem-captcha { border-radius: 8px; cursor: crosshair; max-width: 100%; border: 2px dashed var(--danger); }
+        /* Captcha Amigável */
+        #area-captcha { display: none; background: #fff5f5; border-color: #feb2b2; }
+        #area-captcha .card-title { color: #c53030; border-bottom-color: #fed7d7;}
+        #imagem-captcha { border-radius: 12px; cursor: crosshair; max-width: 100%; border: 3px solid white; box-shadow: var(--shadow-md); margin-top: 15px;}
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
 </head>
@@ -98,102 +113,99 @@
     <div class="container">
         
         <div class="header">
-            <h1><i class="fa-solid fa-robot"></i> Terminal Coupa ERP <span id="badge-fila" class="badge">Fila: 0</span></h1>
-            <p style="color: var(--text-muted); margin-top: 5px;">Sistema Automático de Leitura e Resposta</p>
+            <h1><i class="fa-solid fa-seedling"></i> Assistente de Compras <span id="badge-fila" class="badge"><i class="fa-solid fa-layer-group"></i> Fila: 0</span></h1>
+            <p class="subtitle">Gestão automatizada de eventos e cotações da Vale</p>
         </div>
 
-        <button id="btn-ligar" onclick="ligarRobo()" class="btn btn-large btn-warning">
-            <i class="fa-solid fa-power-off"></i> Iniciar Servidor (Login Automático)
+        <button id="btn-ligar" onclick="ligarRobo()" class="btn btn-large btn-primary">
+            <i class="fa-solid fa-link"></i> Conectar ao Sistema Coupa
         </button>
         
         <div id="painel-tarefas" class="card" style="display: none;">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <h3 id="txt-status" style="margin: 0; color: var(--success);"><i class="fa-solid fa-circle-check"></i> Robô Livre! Escolha uma ação abaixo:</h3>
+            <div style="text-align: center; margin-bottom: 10px;">
+                <h3 id="txt-status" style="margin: 0; color: var(--success); font-family: 'Nunito', sans-serif; font-size: 22px;">
+                    <i class="fa-regular fa-face-smile-wink"></i> Tudo pronto! O que vamos fazer agora?
+                </h3>
             </div>
             
             <div class="botoes-acao">
-                <button id="btn-extrair" onclick="executarTarefa('extrair')" class="btn btn-success"><i class="fa-solid fa-download"></i> Tirar Eventos</button>
-                <button id="btn-verificar" onclick="executarTarefa('verificar')" class="btn btn-primary"><i class="fa-solid fa-list-check"></i> Verificar Respostas</button>
-                <button id="btn-abrir-res" onclick="mostrarFormResposta()" class="btn btn-purple"><i class="fa-solid fa-upload"></i> Responder Evento</button>
+                <button id="btn-extrair" onclick="executarTarefa('extrair')" class="btn btn-success"><i class="fa-solid fa-file-arrow-down"></i> Extrair Cotações</button>
+                <button id="btn-verificar" onclick="executarTarefa('verificar')" class="btn btn-primary"><i class="fa-solid fa-clipboard-check"></i> Verificar Respostas</button>
+                <button id="btn-abrir-res" onclick="mostrarFormResposta()" class="btn btn-purple"><i class="fa-solid fa-paper-plane"></i> Responder Evento</button>
             </div>
             
-            <button id="btn-parar" onclick="solicitarParada()" class="btn btn-danger" style="display: none; width: 100%; margin-top: 15px;">
-                <i class="fa-solid fa-hand"></i> PARAR AÇÃO ATUAL (Salvar e Fechar)
+            <button id="btn-parar" onclick="solicitarParada()" class="btn btn-danger" style="display: none; width: 100%; margin-top: 20px;">
+                <i class="fa-solid fa-hand"></i> Finalizar tarefa atual de forma segura
             </button>
             
             <div id="area-resposta" class="form-container">
-                <h3 style="margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;"><i class="fa-solid fa-pen-to-square"></i> Preencher Resposta</h3>
+                <h3 class="card-title"><i class="fa-regular fa-pen-to-square"></i> Preencher Nova Resposta</h3>
                 
                 <form id="formResponder">
                     <div class="grid-2">
                         <div class="form-group">
-                            <label><i class="fa-solid fa-hashtag"></i> Número do Evento:</label>
+                            <label>Número do Evento (ID)</label>
                             <input type="text" id="res_evento" required placeholder="Ex: 165060">
                         </div>
                         <div class="form-group">
-                            <label><i class="fa-solid fa-boxes-stacked"></i> Qtd. Total de Itens no Evento:</label>
+                            <label>Quantidade total de itens do evento</label>
                             <input type="number" id="res_qtd_itens" min="1" value="1" required onchange="gerarCamposItens()">
                         </div>
                     </div>
                     
-                    <p style="font-size: 12px; color: var(--warning); text-align: left;"><i class="fa-solid fa-circle-info"></i> Dica: Deixe os campos em branco nos itens que você NÃO quer responder.</p>
+                    <p style="font-size: 13px; color: var(--text-muted); text-align: left; margin-top: 0; margin-bottom: 20px;"><i class="fa-solid fa-circle-info" style="color: var(--primary)"></i> Dica: Preencha apenas os itens que deseja responder. Deixe os outros em branco.</p>
 
                     <div id="container-itens"></div>
 
-                    <div class="grid-2" style="margin-top: 20px; align-items: start;">
-                        <div class="form-group">
-                            <label><i class="fa-solid fa-file-pdf"></i> Anexar Datasheet(s):</label>
+                    <div class="grid-2" style="margin-top: 25px; align-items: start; background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label><i class="fa-solid fa-file-pdf" style="color:#e53e3e"></i> Datasheet (Especificações Técnicas)</label>
                             <input type="file" id="res_datasheet" accept=".pdf" multiple onchange="adicionarArquivos(event, 'ds')">
-                            <div id="lista-ds" style="margin-top: 10px;"></div>
+                            <div id="lista-ds" style="margin-top: 15px;"></div>
                         </div>
-                        <div class="form-group">
-                            <label><i class="fa-solid fa-file-pdf"></i> Anexar DAV(s):</label>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label><i class="fa-solid fa-file-pdf" style="color:#e53e3e"></i> DAV (Documento Auxiliar)</label>
                             <input type="file" id="res_dav" accept=".pdf" multiple onchange="adicionarArquivos(event, 'dav')">
-                            <div id="lista-dav" style="margin-top: 10px;"></div>
+                            <div id="lista-dav" style="margin-top: 15px;"></div>
                         </div>
                     </div>
 
-                    <button type="button" onclick="enviarResposta()" class="btn btn-large btn-purple" style="margin-top: 15px; margin-bottom: 0;">
-                        <i class="fa-solid fa-paper-plane"></i> Mandar para a Fila do Robô
+                    <button type="button" onclick="enviarResposta()" class="btn btn-large btn-purple" style="margin-top: 25px; margin-bottom: 0;">
+                        <i class="fa-solid fa-paper-plane"></i> Adicionar à Fila de Processamento
                     </button>
                 </form>
             </div>
         </div>
 
         <div id="painel-progresso" class="card">
-            <h3 style="margin: 0; text-align: left;"><i class="fa-solid fa-chart-line"></i> Status da Fila de Respostas</h3>
+            <h3 class="card-title"><i class="fa-solid fa-chart-pie" style="color: var(--primary)"></i> Progresso das Respostas</h3>
             <div class="status-grid">
                 <div class="status-box">
-                    <h4 style="color: var(--warning);"><i class="fa-solid fa-hourglass-half"></i> Na Fila (Aguardando)</h4>
+                    <h4><i class="fa-solid fa-clock" style="color: var(--warning)"></i> Aguardando na Fila</h4>
                     <ul id="lista-pendentes"></ul>
                 </div>
                 <div class="status-box">
-                    <h4 style="color: var(--success);"><i class="fa-solid fa-check-double"></i> Já Respondidos</h4>
+                    <h4><i class="fa-solid fa-circle-check" style="color: var(--success)"></i> Concluídos com Sucesso</h4>
                     <ul id="lista-concluidos"></ul>
                 </div>
             </div>
         </div>
         
         <div id="area-captcha" class="card">
-            <h3 style="margin-top: 0; color: var(--danger);"><i class="fa-solid fa-triangle-exclamation"></i> Intervenção Manual Necessária</h3>
-            <p style="margin: 0; color: var(--text-muted);">O sistema da Vale exigiu verificação. Clique na imagem abaixo no local correto para liberar o robô:</p>
+            <h3 class="card-title"><i class="fa-solid fa-shield-halved"></i> Verificação de Segurança Necessária</h3>
+            <p style="margin: 0; color: #742a2a; font-weight: 500;">O portal da Vale solicitou uma confirmação humana. Por favor, clique na imagem abaixo para resolver:</p>
             <img id="imagem-captcha" src="" alt="Tela Captcha">
         </div>
 
-        <div class="terminal">
-            <div class="terminal-header">
-                <div class="dot red"></div>
-                <div class="dot yellow"></div>
-                <div class="dot green"></div>
-                <span style="margin-left: 10px; font-size: 12px; color: #888; font-family: monospace;">bash - log_do_robo</span>
-            </div>
-            <p id="log">> Sincronizando com o servidor principal...</p>
+        <div class="notificacoes">
+            <div id="indicador-status" class="status-dot offline"></div>
+            <p id="log">Conectando ao servidor principal...</p>
         </div>
     </div>
 
     <script>
         const socket = io();
-        socket.emit('sou_frontend'); // Avisa o servidor que isto é uma página de um utilizador
+        socket.emit('sou_frontend'); 
         let arquivosDS = []; let arquivosDAV = [];
 
         // === SINCRONIZAÇÃO EM TEMPO REAL ===
@@ -201,21 +213,33 @@
             const estado = dados.estado;
             const msg = dados.mensagem;
             
-            if (msg) document.getElementById('log').innerText = "> " + msg;
+            // Atualiza o painel de notificações
+            const dot = document.getElementById('indicador-status');
+            if (estado.status === 'desligado' || !msg) {
+                dot.classList.add('offline');
+            } else {
+                dot.classList.remove('offline');
+            }
+            if (msg) document.getElementById('log').innerText = msg;
 
             // Fila de Respostas
             const badgeFila = document.getElementById('badge-fila');
             if (estado.tamanho_fila > 0) {
-                badgeFila.style.display = 'inline-block';
-                badgeFila.innerText = "Fila: " + estado.tamanho_fila;
+                badgeFila.style.display = 'inline-flex';
+                badgeFila.innerHTML = `<i class="fa-solid fa-layer-group"></i> Fila: ${estado.tamanho_fila}`;
             } else { badgeFila.style.display = 'none'; }
 
             // Lógica do Painel de Progresso
             const painelProgresso = document.getElementById('painel-progresso');
             if (estado.fila_pendente.length > 0 || estado.historico_respondidos.length > 0) {
                 painelProgresso.style.display = 'block';
-                document.getElementById('lista-pendentes').innerHTML = estado.fila_pendente.map(e => `<li><i class="fa-solid fa-spinner fa-spin" style="color:var(--warning)"></i> Evento ${e}</li>`).join('');
-                document.getElementById('lista-concluidos').innerHTML = estado.historico_respondidos.map(e => `<li><i class="fa-solid fa-check" style="color:var(--success)"></i> Evento ${e}</li>`).join('');
+                document.getElementById('lista-pendentes').innerHTML = estado.fila_pendente.map(e => `<li><i class="fa-solid fa-circle-notch fa-spin" style="color:var(--warning)"></i> Processando Evento ${e}</li>`).join('');
+                
+                // Formata os concluídos (verificando se tem a palavra Falhou)
+                document.getElementById('lista-concluidos').innerHTML = estado.historico_respondidos.map(e => {
+                    if(e.includes('Falhou')) return `<li style="border-left: 4px solid var(--danger)"><i class="fa-solid fa-circle-xmark" style="color:var(--danger)"></i> ${e}</li>`;
+                    return `<li style="border-left: 4px solid var(--success)"><i class="fa-solid fa-check" style="color:var(--success)"></i> Evento ${e}</li>`;
+                }).join('');
             } else {
                 painelProgresso.style.display = 'none';
             }
@@ -224,13 +248,14 @@
 
             const btnLigar = document.getElementById('btn-ligar');
             const painelTarefas = document.getElementById('painel-tarefas');
+            const txtStatus = document.getElementById('txt-status');
             
             if (estado.status === 'desligado') {
-                btnLigar.style.display = 'inline-block';
-                btnLigar.disabled = false; btnLigar.innerHTML = '<i class="fa-solid fa-power-off"></i> Iniciar Servidor (Login Automático)';
+                btnLigar.style.display = 'inline-flex';
+                btnLigar.disabled = false; btnLigar.innerHTML = '<i class="fa-solid fa-link"></i> Conectar ao Sistema Coupa';
                 painelTarefas.style.display = 'none';
             } else if (estado.status === 'logando') {
-                btnLigar.disabled = true; btnLigar.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Sessão Aberta. Logando...';
+                btnLigar.disabled = true; btnLigar.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Estabelecendo conexão segura...';
             } else {
                 btnLigar.style.display = 'none';
                 painelTarefas.style.display = 'block';
@@ -239,21 +264,21 @@
                 const btnVerificar = document.getElementById('btn-verificar');
                 const btnAbrirRes = document.getElementById('btn-abrir-res');
                 const btnParar = document.getElementById('btn-parar');
-                const txtStatus = document.getElementById('txt-status');
 
                 if (estado.status === 'ocioso') {
-                    txtStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Robô Livre! Escolha uma ação abaixo:';
+                    txtStatus.innerHTML = '<i class="fa-regular fa-face-smile-wink"></i> Tudo pronto! O que vamos fazer agora?';
                     txtStatus.style.color = 'var(--success)';
                     btnExtrair.disabled = false; btnVerificar.disabled = false; btnAbrirRes.disabled = false;
                     btnParar.style.display = 'none';
                 } else if (estado.status === 'extraindo' || estado.status === 'verificando') {
-                    txtStatus.innerHTML = `<i class="fa-solid fa-gears fa-spin"></i> O Robô está ocupado no momento: ${estado.status.toUpperCase()}`;
+                    const acaoFormatada = estado.status === 'extraindo' ? 'Extraindo cotações' : 'Verificando dados';
+                    txtStatus.innerHTML = `<i class="fa-solid fa-arrows-rotate fa-spin"></i> O sistema está trabalhando: ${acaoFormatada}`;
                     txtStatus.style.color = 'var(--warning)';
                     btnExtrair.disabled = true; btnVerificar.disabled = true; btnAbrirRes.disabled = true;
-                    btnParar.style.display = 'inline-block'; 
+                    btnParar.style.display = 'inline-flex'; 
                     document.getElementById('area-resposta').style.display = 'none';
                 } else if (estado.status === 'respondendo') {
-                    txtStatus.innerHTML = '<i class="fa-solid fa-layer-group"></i> Robô processando Fila de Respostas. Pode enviar mais!';
+                    txtStatus.innerHTML = '<i class="fa-solid fa-layer-group"></i> Processando fila de respostas. Pode enviar mais!';
                     txtStatus.style.color = 'var(--purple)';
                     btnExtrair.disabled = true; btnVerificar.disabled = true; 
                     btnAbrirRes.disabled = false; 
@@ -266,6 +291,7 @@
         socket.on('nova_imagem', function(dados) { 
             document.getElementById('area-captcha').style.display = 'block';
             document.getElementById('imagem-captcha').src = "data:image/png;base64," + dados.imagem; 
+            window.scrollTo({ top: document.getElementById('area-captcha').offsetTop - 20, behavior: 'smooth' });
         });
 
         document.getElementById('imagem-captcha').addEventListener('click', function(event) {
@@ -273,15 +299,18 @@
             socket.emit('clique_no_captcha', { x: Math.round(event.offsetX * (this.naturalWidth / rect.width)), y: Math.round(event.offsetY * (this.naturalHeight / rect.height)) });
         });
 
-        // === FUNÇÕES DE AÇÃO ATUALIZADAS PARA A NUVEM ===
+        // === FUNÇÕES DE AÇÃO ===
         function ligarRobo() { socket.emit('comando_direto', { modo: 'ligar_robo' }); }
         function executarTarefa(modo) { socket.emit('comando_direto', { modo: modo }); }
         function solicitarParada() { 
             socket.emit('comando_direto', { modo: 'solicitar_parada' }); 
-            document.getElementById('btn-parar').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Aguarde... Encerrando e Salvando Lote!'; 
+            document.getElementById('btn-parar').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Finalizando etapa atual e salvando arquivos...'; 
             document.getElementById('btn-parar').disabled = true; 
         }
-        function mostrarFormResposta() { document.getElementById('area-resposta').style.display = 'block'; }
+        function mostrarFormResposta() { 
+            document.getElementById('area-resposta').style.display = 'block'; 
+            window.scrollTo({ top: document.getElementById('area-resposta').offsetTop - 20, behavior: 'smooth' });
+        }
 
         function gerarCamposItens() {
             const qtd = parseInt(document.getElementById('res_qtd_itens').value) || 1;
@@ -290,10 +319,16 @@
             for(let i=1; i<=qtd; i++) {
                 container.innerHTML += `
                     <div class="caixa-item">
-                        <span class="caixa-item-titulo"><i class="fa-solid fa-box-open"></i> Item ${i}</span>
+                        <span class="caixa-item-titulo"><i class="fa-solid fa-box"></i> Item ${i}</span>
                         <div class="grid-2">
-                            <div class="form-group" style="margin: 0;"><input type="text" id="res_preco_${i}" placeholder="Preço (Vazio para pular)"></div>
-                            <div class="form-group" style="margin: 0;"><input type="number" id="res_prazo_${i}" placeholder="Prazo (Vazio para pular)"></div>
+                            <div class="form-group" style="margin: 0;">
+                                <label style="color:var(--text-muted); font-size:12px; margin-bottom:4px;">Preço Ofertado (R$)</label>
+                                <input type="text" id="res_preco_${i}" placeholder="Vazio para ignorar">
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label style="color:var(--text-muted); font-size:12px; margin-bottom:4px;">Prazo de Entrega (Dias)</label>
+                                <input type="number" id="res_prazo_${i}" placeholder="Vazio para ignorar">
+                            </div>
                         </div>
                     </div>`;
             }
@@ -319,13 +354,17 @@
             const lista = tipo === 'ds' ? arquivosDS : arquivosDAV;
             div.innerHTML = "";
             lista.forEach((arquivo, index) => {
-                div.innerHTML += `<div class="arquivo-item"><span><i class="fa-regular fa-file-pdf" style="color:var(--danger)"></i> ${arquivo.name}</span> <button type="button" class="btn-remover" onclick="removerArquivo('${tipo}', ${index})"><i class="fa-solid fa-xmark"></i></button></div>`;
+                div.innerHTML += `
+                    <div class="arquivo-item">
+                        <span><i class="fa-regular fa-file-pdf" style="color:#e53e3e; font-size:18px;"></i> ${arquivo.name}</span> 
+                        <button type="button" class="btn-remover" onclick="removerArquivo('${tipo}', ${index})" title="Remover"><i class="fa-solid fa-xmark"></i></button>
+                    </div>`;
             });
         }
 
         function enviarResposta() {
             const eventoId = document.getElementById('res_evento').value;
-            if(!eventoId) { alert("Preencha o número do evento!"); return; }
+            if(!eventoId) { alert("Por favor, preencha o número do evento!"); return; }
 
             const formData = new FormData();
             formData.append('evento', eventoId);
@@ -342,18 +381,29 @@
             for(let i=0; i < arquivosDS.length; i++) { formData.append('datasheet', arquivosDS[i]); }
             for(let i=0; i < arquivosDAV.length; i++) { formData.append('dav', arquivosDAV[i]); }
 
+            const btnEnviar = document.querySelector('button[onclick="enviarResposta()"]');
+            const textoOriginal = btnEnviar.innerHTML;
+            btnEnviar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+            btnEnviar.disabled = true;
+
             fetch('/api/responder', { method: 'POST', body: formData })
             .then(response => response.json())
             .then(data => {
+                btnEnviar.innerHTML = textoOriginal;
+                btnEnviar.disabled = false;
+                
                 if(data.status === "sucesso") {
                     document.getElementById('area-resposta').style.display = 'none';
                     document.getElementById('res_evento').value = '';
                     arquivosDS = []; arquivosDAV = [];
                     atualizarListasNaTela('ds'); atualizarListasNaTela('dav');
                     
-                    // Rola a tela pra cima suavemente para ver o painel de fila
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                } else { alert("Erro: " + data.mensagem); }
+                    window.scrollTo({ top: document.getElementById('painel-progresso').offsetTop - 20, behavior: 'smooth' });
+                } else { alert("Não foi possível enviar: " + data.mensagem); }
+            }).catch(err => {
+                btnEnviar.innerHTML = textoOriginal;
+                btnEnviar.disabled = false;
+                alert("Erro de conexão ao enviar os dados.");
             });
         }
     </script>
