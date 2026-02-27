@@ -308,8 +308,9 @@
             div.className = 'evento-card';
             div.id = `bloco_evento_${id}`;
             
+            // CORRIGIDO: Removido o 'event' do onclick para evitar conflitos de leitura do navegador
             div.innerHTML = `
-                <div class="evento-header active" onclick="toggleBlocoEvento(${id}, event)">
+                <div class="evento-header active" onclick="toggleBlocoEvento(${id})">
                     <div class="evento-title"><i class="fa-solid fa-box-archive"></i> EVENTO <span id="titulo_evento_${id}" style="color: #fff; margin-left: 5px;">#NOVO</span></div>
                     <div class="evento-actions">
                         ${id > 1 ? `<button type="button" class="btn-mini-action danger" onclick="removerBlocoEvento(${id}, event)" title="Excluir Bloco"><i class="fa-solid fa-trash"></i></button>` : ''}
@@ -349,23 +350,21 @@
             gerarCamposItensBloco(id); 
         }
 
-        function toggleBlocoEvento(id, event) {
-            if(event && event.target.closest('.danger')) return; 
-            
+        // CORRIGIDO: Função mais limpa usando 'toggle' nativo do Javascript
+        function toggleBlocoEvento(id) {
             const corpo = document.getElementById(`corpo_evento_${id}`);
             const icone = document.getElementById(`icone_toggle_${id}`);
             const header = corpo.previousElementSibling;
             
+            corpo.classList.toggle('active');
+            header.classList.toggle('active');
+            
             if (corpo.classList.contains('active')) {
-                corpo.classList.remove('active');
-                header.classList.remove('active');
-                icone.classList.remove('fa-chevron-up');
-                icone.classList.add('fa-chevron-down');
-            } else {
-                corpo.classList.add('active');
-                header.classList.add('active');
                 icone.classList.remove('fa-chevron-down');
                 icone.classList.add('fa-chevron-up');
+            } else {
+                icone.classList.remove('fa-chevron-up');
+                icone.classList.add('fa-chevron-down');
             }
         }
 

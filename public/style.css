@@ -2,13 +2,11 @@
    VARIÁVEIS E TEMA GLOBAL - MAESTRO
    ========================================= */
 :root {
-    /* Cores do Tema Baseado na Imagem (Azul profundo e Magenta) */
     --login-bg-left: #0b1930; 
     --login-bg-right: #3b0726;
     --login-border: #6d1b3f; 
     --login-btn: #373b54;
 
-    /* Tema Glassmorphism para os Painéis */
     --bg-glass: rgba(15, 18, 25, 0.55); 
     --bg-glass-hover: rgba(25, 28, 40, 0.7);
     --bg-input: rgba(0, 0, 0, 0.4); 
@@ -26,7 +24,7 @@
 body { font-family: 'Inter', sans-serif; color: var(--text-main); margin: 0; padding: 0; min-height: 100vh; overflow-x: hidden; }
 
 /* =========================================
-   TELA DE LOGIN (index.html) - Mantém a teia
+   TELA DE LOGIN (Mantida)
    ========================================= */
 body.pagina-login { background: linear-gradient(135deg, var(--login-bg-left) 0%, var(--login-bg-right) 100%); display: flex; align-items: center; justify-content: center; overflow: hidden; }
 #particles-js { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: 0; pointer-events: none; }
@@ -50,15 +48,10 @@ body.pagina-login { background: linear-gradient(135deg, var(--login-bg-left) 0%,
 .btn-entrar:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* =========================================
-   PAINÉIS DE AUTOMAÇÃO (coupa.html)
+   PAINÉIS DE AUTOMAÇÃO (Coupa.html)
    ========================================= */
-body.pagina-painel { 
-    background: linear-gradient(135deg, #07101f 0%, #1a0311 100%); /* Gradiente mais sutil e escuro */
-    display: flex; justify-content: center; padding: 30px 20px 80px 20px; 
-}
-
+body.pagina-painel { background: linear-gradient(135deg, #07101f 0%, #1a0311 100%); display: flex; justify-content: center; padding: 30px 20px 80px 20px; }
 .container { width: 100%; max-width: 1200px; position: relative; z-index: 10; }
-
 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid var(--border-glass); padding-bottom: 20px;}
 .header-title-box { display: flex; align-items: center; gap: 20px; }
 .header-logo-mini { width: 60px; mix-blend-mode: screen; opacity: 0.9; }
@@ -67,35 +60,23 @@ body.pagina-painel {
 .btn-voltar { color: var(--text-dim); text-decoration: none; font-size: 11px; font-family: 'Inter', sans-serif; transition: 0.2s; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 6px;}
 .btn-voltar:hover { background: rgba(255,255,255,0.1); color: #fff; }
 
-/* Dashboard Grid System */
 .dashboard-grid { display: grid; grid-template-columns: 320px 1fr; gap: 25px; align-items: start; }
-
-/* Efeito GLASSMORPHISM (Vidro) nos Cartões */
-.glass-card { 
-    background: var(--bg-glass); 
-    backdrop-filter: blur(16px); 
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid var(--border-glass); 
-    border-radius: 12px; 
-    padding: 25px; 
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); 
-    position: relative;
-    overflow: hidden;
-}
-
+.glass-card { background: var(--bg-glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--border-glass); border-radius: 12px; padding: 25px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); position: relative; overflow: hidden;}
 .card-title { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; margin-top: 0; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; letter-spacing: 1.5px; border-bottom: 1px solid var(--border-glass); padding-bottom: 15px;}
 .card-title i { color: var(--accent-blue); font-size: 16px;}
 
-/* Área de Informações do Sistema (Lado Esquerdo) */
 .sys-info-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 13px; font-family: 'Roboto Mono', monospace; border-bottom: 1px dashed rgba(255,255,255,0.05); padding-bottom: 8px;}
 .sys-label { color: var(--text-dim); }
 .sys-value { color: #fff; font-weight: 600;}
 
-/* Botões do Painel */
 .btn { font-family: 'Inter', sans-serif; padding: 14px 20px; font-size: 13px; font-weight: 600; text-transform: uppercase; border: 1px solid transparent; border-radius: 6px; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; justify-content: center; gap: 10px; letter-spacing: 1px;}
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 .btn-large { width: 100%; margin-top: 15px; }
+
+/* Botão de Cancelar Item na Fila */
+.btn-remover-fila { background: rgba(248, 81, 73, 0.1); color: var(--alert-red); border: 1px solid transparent; border-radius: 4px; cursor: pointer; padding: 4px 8px; font-size: 12px; transition: 0.2s; }
+.btn-remover-fila:hover { background: rgba(248, 81, 73, 0.2); border-color: rgba(248, 81, 73, 0.4); transform: scale(1.1); }
 
 .btn-power { background: rgba(255, 214, 0, 0.1); color: var(--vale-yellow); border-color: rgba(255, 214, 0, 0.3); }
 .btn-power:hover:not(:disabled) { background: rgba(255, 214, 0, 0.2); }
@@ -109,24 +90,34 @@ body.pagina-painel {
 
 .btn-respond { background: var(--accent-blue); color: #000; font-weight: 700;}
 .btn-respond:hover:not(:disabled) { background: #62bdf0; }
-
 .btn-stop { background: rgba(255, 61, 0, 0.1); color: var(--alert-red); border-color: rgba(255, 61, 0, 0.3); }
-
 .botoes-acao { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
 
-/* Cadeado de Segurança (Overlay) */
 .lock-screen { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10, 12, 18, 0.7); backdrop-filter: blur(4px); z-index: 50; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-dim); transition: 0.5s ease; border-radius: 12px;}
 .lock-screen i { font-size: 30px; margin-bottom: 15px; color: var(--login-border); }
 .lock-screen h3 { font-family: 'Inter', sans-serif; margin: 0; font-size: 16px; color: #fff; letter-spacing: 1px;}
 .lock-screen p { font-size: 12px; margin-top: 5px; font-family: 'Roboto Mono', monospace;}
 
-/* Formulário */
 .form-container { display: none; margin-top: 30px; padding-top: 30px; border-top: 1px dashed var(--border-glass); }
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .form-group { margin-bottom: 20px; text-align: left; }
 .form-group label { display: block; font-family: 'Inter', sans-serif; font-weight: 600; margin-bottom: 8px; color: var(--text-dim); font-size: 11px; text-transform: uppercase; letter-spacing: 1px;}
 .form-group input { width: 100%; padding: 14px; border-radius: 6px; border: 1px solid var(--border-glass); background: var(--bg-input); color: #fff; font-size: 14px; box-sizing: border-box; outline: none; transition: 0.3s; font-family: 'Roboto Mono', monospace;}
 .form-group input:focus { border-color: var(--accent-blue); background: rgba(0,0,0,0.6); }
+
+/* ==== NOVO: ESTILOS DO ACORDEÃO DE EVENTOS ==== */
+.evento-card { background: rgba(0,0,0,0.25); border: 1px solid var(--border-glass); border-radius: 8px; margin-bottom: 15px; overflow: hidden; transition: 0.3s;}
+.evento-header { padding: 15px 20px; background: rgba(255,255,255,0.02); display: flex; justify-content: space-between; align-items: center; cursor: pointer; border-bottom: 1px solid transparent; transition: 0.2s; }
+.evento-header:hover { background: rgba(255,255,255,0.05); }
+.evento-header.active { border-bottom-color: var(--border-glass); background: rgba(77, 168, 218, 0.05);}
+.evento-title { font-family: 'Roboto Mono', monospace; font-size: 14px; font-weight: 700; color: var(--vale-yellow); display: flex; align-items: center; gap: 10px; }
+.evento-actions { display: flex; gap: 15px; align-items: center; }
+.btn-mini-action { background: transparent; border: none; color: var(--text-dim); cursor: pointer; transition: 0.2s; font-size: 14px; padding: 5px;}
+.btn-mini-action:hover { color: #fff; transform: scale(1.1); }
+.btn-mini-action.danger:hover { color: var(--alert-red); }
+.evento-body { padding: 20px; display: none; }
+.evento-body.active { display: block; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
 .caixa-item { background: rgba(0,0,0,0.3); border-left: 3px solid var(--accent-blue); padding: 20px; margin-bottom: 15px; border-radius: 0 6px 6px 0; border: 1px solid var(--border-glass); border-left: 3px solid var(--accent-blue);}
 .caixa-item-titulo { color: #fff; font-weight: 700; margin-bottom: 15px; display: block; font-family: 'Roboto Mono', monospace; font-size: 13px;}

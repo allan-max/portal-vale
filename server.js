@@ -175,20 +175,30 @@ io.on('connection', (socket) => {
         }
     });
 
-    // === NOVO: REMOVER EVENTO ESPECÍFICO DA FILA ===
+    // === NOVO: REMOVER EVENTO ESPECÍFICO DA FILA (VISUAL E MEMÓRIA) ===
     socket.on('remover_da_fila', (dados) => {
-        const eventoId = dados.evento;
-        // Procura se o evento ainda está na fila de pendentes
-        const index = estado_global.fila_pendente.indexOf(eventoId);
+        const eventoId = String(dados.evento);
         
+        // 1. Tira do Visor (Tela do Site)
+        const index = estado_global.fila_pendente.indexOf(eventoId);
         if (index !== -1) {
-            // Se achou, remove da lista e atualiza o tamanho da fila
             estado_global.fila_pendente.splice(index, 1);
             estado_global.tamanho_fila = estado_global.fila_pendente.length;
-            
-            console.log(`⚠️ Evento ${eventoId} cancelado e removido da fila.`);
-            notificar_todos(`Aviso: O Evento ${eventoId} foi removido da fila manualmente.`);
         }
+
+        // 2. O CORTE CIRÚRGICO: Tira da Memória Real de Processamento
+        // (Nota: Se a sua variável de fila no server.js tiver outro nome, troque "fila_respostas" abaixo)
+        try {
+            const indexReal = fila_respostas.findIndex(pacote => String(pacote.evento) === eventoId);
+            if (indexReal !== -1) {
+                fila_respostas.splice(indexReal, 1); // Arranca o pacote e os PDFs da memória!
+            }
+        } catch(e) {
+            console.log("Aviso: Falha ao expurgar pacote da memória profunda.");
+        }
+        
+        console.log(`⚠️ Evento ${eventoId} CANCELADO e obliterado do servidor.`);
+        notificar_todos(`Aviso: O Evento ${eventoId} foi removido da fila manualmente.`);
     });
 
     socket.on('disconnect', () => {
