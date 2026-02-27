@@ -249,22 +249,37 @@
             }
         });
 
+        // === TIMERS E INTELIGÊNCIA DO CAPTCHA (EFEITO LIVE) ===
         socket.on('nova_imagem', function(dados) { 
             const areaCaptcha = document.getElementById('area-captcha');
-            areaCaptcha.style.display = 'block';
+            
+            // 1. Se o captcha estava invisível, mostra e rola a tela UMA ÚNICA VEZ
+            if (areaCaptcha.style.display === 'none' || areaCaptcha.style.display === '') {
+                areaCaptcha.style.display = 'block';
+                window.scrollTo({ top: areaCaptcha.offsetTop - 20, behavior: 'smooth' });
+            }
+            
+            // 2. Atualiza apenas a "lente" da câmera suavemente
             document.getElementById('imagem-captcha').src = "data:image/png;base64," + dados.imagem; 
-            window.scrollTo({ top: areaCaptcha.offsetTop - 20, behavior: 'smooth' });
 
+            // 3. Se o robô ficar 5 segundos sem mandar vídeo (sinal de que passou), ele esconde a caixa
             clearTimeout(timerCaptcha);
-            timerCaptcha = setTimeout(() => { areaCaptcha.style.display = 'none'; }, 5000);
+            timerCaptcha = setTimeout(() => { 
+                areaCaptcha.style.display = 'none'; 
+            }, 5000);
         });
 
         document.getElementById('imagem-captcha').addEventListener('click', function(event) {
-            const rect = this.getBoundingClientRect();
-            socket.emit('clique_no_captcha', { x: Math.round(event.offsetX * (this.naturalWidth / rect.width)), y: Math.round(event.offsetY * (this.naturalHeight / rect.height)) });
-            document.getElementById('area-captcha').style.display = 'none';
-        });
+            // Efeito visual sutil de clique (pisca levemente a imagem em vez de sumir com ela)
+            this.style.opacity = '0.5';
+            setTimeout(() => { this.style.opacity = '1'; }, 150);
 
+            const rect = this.getBoundingClientRect();
+            socket.emit('clique_no_captcha', { 
+                x: Math.round(event.offsetX * (this.naturalWidth / rect.width)), 
+                y: Math.round(event.offsetY * (this.naturalHeight / rect.height)) 
+            });
+        });
         function ligarRobo() { socket.emit('comando_direto', { modo: 'ligar_robo', portal: 'coupa' }); }
         
         function executarTarefa(modo) { socket.emit('comando_direto', { modo: modo, portal: 'coupa' }); }
