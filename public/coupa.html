@@ -249,24 +249,39 @@
             }
         });
 
-        // === TIMERS E INTELIGÊNCIA DO CAPTCHA (EFEITO LIVE) ===
+        // === TIMERS E INTELIGÊNCIA DO CAPTCHA (EFEITO LIVE SEM PISCAR) ===
         socket.on('nova_imagem', function(dados) { 
             const areaCaptcha = document.getElementById('area-captcha');
             
-            // 1. Se o captcha estava invisível, mostra e rola a tela UMA ÚNICA VEZ
             if (areaCaptcha.style.display === 'none' || areaCaptcha.style.display === '') {
                 areaCaptcha.style.display = 'block';
-                window.scrollTo({ top: areaCaptcha.offsetTop - 20, behavior: 'smooth' });
+                // Rolagem suave com leve atraso para a caixa ter tempo de abrir
+                setTimeout(() => window.scrollTo({ top: areaCaptcha.offsetTop - 20, behavior: 'smooth' }), 100);
             }
             
-            // 2. Atualiza apenas a "lente" da câmera suavemente
-            document.getElementById('imagem-captcha').src = "data:image/png;base64," + dados.imagem; 
+            // TÉCNICA DE DOUBLE BUFFERING: Carrega na memória RAM do navegador primeiro!
+            const imgOculta = new Image();
+            imgOculta.onload = function() {
+                // Só substitui a foto da tela quando a nova já estiver totalmente decodificada
+                document.getElementById('imagem-captcha').src = this.src;
+            };
+            imgOculta.src = "data:image/png;base64," + dados.imagem; 
 
-            // 3. Se o robô ficar 5 segundos sem mandar vídeo (sinal de que passou), ele esconde a caixa
             clearTimeout(timerCaptcha);
             timerCaptcha = setTimeout(() => { 
                 areaCaptcha.style.display = 'none'; 
             }, 5000);
+        });
+
+        document.getElementById('imagem-captcha').addEventListener('click', function(event) {
+            this.style.opacity = '0.5';
+            setTimeout(() => { this.style.opacity = '1'; }, 150);
+
+            const rect = this.getBoundingClientRect();
+            socket.emit('clique_no_captcha', { 
+                x: Math.round(event.offsetX * (this.naturalWidth / rect.width)), 
+                y: Math.round(event.offsetY * (this.naturalHeight / rect.height)) 
+            });
         });
 
         document.getElementById('imagem-captcha').addEventListener('click', function(event) {
