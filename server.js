@@ -175,6 +175,22 @@ io.on('connection', (socket) => {
         }
     });
 
+    // === NOVO: REMOVER EVENTO ESPECÍFICO DA FILA ===
+    socket.on('remover_da_fila', (dados) => {
+        const eventoId = dados.evento;
+        // Procura se o evento ainda está na fila de pendentes
+        const index = estado_global.fila_pendente.indexOf(eventoId);
+        
+        if (index !== -1) {
+            // Se achou, remove da lista e atualiza o tamanho da fila
+            estado_global.fila_pendente.splice(index, 1);
+            estado_global.tamanho_fila = estado_global.fila_pendente.length;
+            
+            console.log(`⚠️ Evento ${eventoId} cancelado e removido da fila.`);
+            notificar_todos(`Aviso: O Evento ${eventoId} foi removido da fila manualmente.`);
+        }
+    });
+
     socket.on('disconnect', () => {
         if (socket.id === bot_socket_id) {
             bot_socket_id = null;
