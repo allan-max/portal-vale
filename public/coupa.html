@@ -265,10 +265,12 @@
             document.getElementById('area-captcha').style.display = 'none';
         });
 
-        function ligarRobo() { socket.emit('comando_direto', { modo: 'ligar_robo' }); }
-        function executarTarefa(modo) { socket.emit('comando_direto', { modo: modo }); }
+        function ligarRobo() { socket.emit('comando_direto', { modo: 'ligar_robo', portal: 'coupa' }); }
+        
+        function executarTarefa(modo) { socket.emit('comando_direto', { modo: modo, portal: 'coupa' }); }
+        
         function solicitarParada(btnElement) { 
-            socket.emit('comando_direto', { modo: 'solicitar_parada' }); 
+            socket.emit('comando_direto', { modo: 'solicitar_parada', portal: 'coupa' }); 
             if(btnElement) {
                 btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> FORÇANDO PARADA...'; 
                 btnElement.disabled = true; 
