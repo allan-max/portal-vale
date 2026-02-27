@@ -28,7 +28,6 @@
         <div class="dashboard-grid">
             
             <div class="col-side">
-                
                 <div class="glass-card" style="margin-bottom: 25px;">
                     <h3 class="card-title"><i class="fa-solid fa-server"></i> Controle de Conexão</h3>
                     <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 20px; line-height: 1.5;">Estabeleça uma conexão segura com o servidor Python local para liberar os módulos operacionais.</p>
@@ -36,15 +35,10 @@
                     <button id="btn-ligar" onclick="ligarRobo()" class="btn btn-large btn-power">
                         <i class="fa-solid fa-power-off"></i> Iniciar Servidor
                     </button>
-                    
-                    <button id="btn-parar" onclick="solicitarParada()" class="btn btn-large btn-stop" style="display: none; margin-top: 10px;">
-                        <i class="fa-solid fa-hand"></i> Abortar Processo
-                    </button>
                 </div>
 
                 <div class="glass-card">
                     <h3 class="card-title"><i class="fa-solid fa-microchip"></i> Status do Sistema</h3>
-                    
                     <div class="sys-info-row">
                         <span class="sys-label">Ambiente</span>
                         <span class="sys-value" style="color: var(--accent-blue);">PRODUÇÃO</span>
@@ -65,7 +59,6 @@
             </div>
 
             <div class="col-main">
-                
                 <div class="glass-card" style="min-height: 300px;">
                     
                     <div id="overlay-lock" class="lock-screen">
@@ -79,9 +72,9 @@
                     </h3>
                     
                     <div class="botoes-acao" style="margin-top: 25px;">
-                        <button id="btn-extrair" onclick="executarTarefa('extrair')" class="btn btn-extract"><i class="fa-solid fa-download"></i> Extrair Cotações</button>
-                        <button id="btn-verificar" onclick="executarTarefa('verificar')" class="btn btn-verify"><i class="fa-solid fa-check-double"></i> Verificar Dados</button>
-                        <button id="btn-abrir-res" onclick="mostrarFormResposta()" class="btn btn-respond"><i class="fa-solid fa-bolt"></i> Responder Eventos</button>
+                        <button id="btn-extrair" class="btn btn-extract"><i class="fa-solid fa-download"></i> Extrair Cotações</button>
+                        <button id="btn-verificar" class="btn btn-verify"><i class="fa-solid fa-check-double"></i> Verificar Dados</button>
+                        <button id="btn-abrir-res" class="btn btn-respond"><i class="fa-solid fa-bolt"></i> Responder Eventos</button>
                     </div>
                     
                     <div id="area-resposta" class="form-container">
@@ -153,10 +146,10 @@
     </div>
 
     <script>
-        // === LÓGICA DO ROBÔ ===
         const socket = io();
         socket.emit('sou_frontend'); 
         let arquivosDS = []; let arquivosDAV = [];
+        let timerCaptcha; // Variável global para o relógio do Captcha
 
         socket.on('sincronizar_estado', function(dados) {
             const estado = dados.estado;
@@ -168,7 +161,6 @@
             
             if (msg) document.getElementById('log').innerText = `> ${msg}`;
 
-            // Atualiza o card de info do sistema
             document.getElementById('info-fila').innerText = `${estado.tamanho_fila} Processos`;
             const dataHora = new Date().toLocaleTimeString('pt-BR');
             document.getElementById('info-sync').innerText = `Hoje às ${dataHora}`;
@@ -176,7 +168,7 @@
             const painelProgresso = document.getElementById('painel-progresso');
             if (estado.fila_pendente.length > 0 || estado.historico_respondidos.length > 0) {
                 painelProgresso.style.display = 'block';
-                document.getElementById('lista-pendentes').innerHTML = estado.fila_pendente.map(e => `<li><i class="fa-solid fa-spinner fa-spin" style="color:var(--vale-yellow)"></i> EVT_${e}</li>`).join('');
+                document.getElementById('lista-pendentes').innerHTML = estado.fila_pendente.map(e => `<li><i class="fa-solid fa-spinner fa-spin" style="color:var(--text-dim)"></i> EVT_${e}</li>`).join('');
                 document.getElementById('lista-concluidos').innerHTML = estado.historico_respondidos.map(e => {
                     if(e.includes('Falhou')) return `<li style="color:var(--alert-red)"><i class="fa-solid fa-xmark"></i> ${e}</li>`;
                     return `<li><i class="fa-solid fa-check" style="color:var(--vale-green)"></i> EVT_${e}</li>`;
@@ -188,11 +180,24 @@
             const btnLigar = document.getElementById('btn-ligar');
             const txtStatus = document.getElementById('txt-status');
             const overlayLock = document.getElementById('overlay-lock');
-            const btnParar = document.getElementById('btn-parar');
+            
             const btnExtrair = document.getElementById('btn-extrair');
             const btnVerificar = document.getElementById('btn-verificar');
             const btnAbrirRes = document.getElementById('btn-abrir-res');
             
+            // 1. Resetamos os botões para o padrão "Limpo" a cada atualização
+            btnExtrair.className = 'btn btn-extract';
+            btnExtrair.innerHTML = '<i class="fa-solid fa-download"></i> Extrair Cotações';
+            btnExtrair.onclick = () => executarTarefa('extrair');
+
+            btnVerificar.className = 'btn btn-verify';
+            btnVerificar.innerHTML = '<i class="fa-solid fa-check-double"></i> Verificar Dados';
+            btnVerificar.onclick = () => executarTarefa('verificar');
+
+            btnAbrirRes.className = 'btn btn-respond';
+            btnAbrirRes.innerHTML = '<i class="fa-solid fa-bolt"></i> Responder Eventos';
+            btnAbrirRes.onclick = () => mostrarFormResposta();
+
             if (estado.status === 'desligado') {
                 btnLigar.disabled = false; 
                 btnLigar.classList.remove('conectado');
@@ -200,7 +205,6 @@
                 overlayLock.style.opacity = '1';
                 overlayLock.style.pointerEvents = 'all';
                 overlayLock.innerHTML = '<i class="fa-solid fa-lock"></i><h3>Módulo Bloqueado</h3><p>Aguardando autenticação do servidor...</p>';
-                btnParar.style.display = 'none';
             } else if (estado.status === 'logando') {
                 btnLigar.disabled = true; 
                 btnLigar.classList.remove('conectado');
@@ -211,35 +215,69 @@
                 btnLigar.classList.add('conectado');
                 btnLigar.innerHTML = '<i class="fa-solid fa-link"></i> SISTEMA ONLINE';
                 
-                // Abre o cadeado suavemente
                 overlayLock.style.opacity = '0';
                 setTimeout(() => { overlayLock.style.pointerEvents = 'none'; }, 500);
                 
+                // 2. Inteligência de Exclusividade Mútua (Toggle e Bloqueio)
                 if (estado.status === 'ocioso') {
                     txtStatus.innerHTML = '<i class="fa-solid fa-terminal"></i> STATUS: AGUARDANDO COMANDOS';
                     txtStatus.style.color = 'var(--vale-green)';
-                    btnExtrair.disabled = false; btnVerificar.disabled = false; btnAbrirRes.disabled = false;
-                    btnParar.style.display = 'none';
-                } else if (estado.status === 'extraindo' || estado.status === 'verificando') {
-                    txtStatus.innerHTML = `<i class="fa-solid fa-gear fa-spin"></i> STATUS: PROCESSANDO (${estado.status.toUpperCase()})`;
+                    btnExtrair.disabled = false;
+                    btnVerificar.disabled = false;
+                    btnAbrirRes.disabled = false;
+                
+                } else if (estado.status === 'extraindo') {
+                    txtStatus.innerHTML = '<i class="fa-solid fa-gear fa-spin"></i> ALGUÉM ESTÁ EXTRAINDO DADOS...';
                     txtStatus.style.color = 'var(--vale-yellow)';
-                    btnExtrair.disabled = true; btnVerificar.disabled = true; btnAbrirRes.disabled = true;
-                    btnParar.style.display = 'inline-flex'; 
+                    
+                    // Botão de Extrair vira o botão de PARAR (Vermelho)
+                    btnExtrair.disabled = false;
+                    btnExtrair.className = 'btn btn-stop';
+                    btnExtrair.innerHTML = '<i class="fa-solid fa-hand"></i> PARAR EXTRAÇÃO';
+                    btnExtrair.onclick = function() { solicitarParada(this); };
+                    
+                    // Demais botões ficam cinzas e mortos
+                    btnVerificar.disabled = true;
+                    btnAbrirRes.disabled = true;
                     document.getElementById('area-resposta').style.display = 'none';
-                } else if (estado.status === 'respondendo') {
-                    txtStatus.innerHTML = '<i class="fa-solid fa-database"></i> STATUS: GRAVANDO RESPOSTAS NA NUVEM';
+                
+                } else if (estado.status === 'verificando') {
+                    txtStatus.innerHTML = '<i class="fa-solid fa-gear fa-spin"></i> ALGUÉM ESTÁ VERIFICANDO DADOS...';
                     txtStatus.style.color = 'var(--accent-blue)';
-                    btnExtrair.disabled = true; btnVerificar.disabled = true; 
+                    
+                    // Botão de Verificar vira o botão de PARAR (Vermelho)
+                    btnVerificar.disabled = false;
+                    btnVerificar.className = 'btn btn-stop';
+                    btnVerificar.innerHTML = '<i class="fa-solid fa-hand"></i> PARAR VERIFICAÇÃO';
+                    btnVerificar.onclick = function() { solicitarParada(this); };
+                    
+                    // Demais botões ficam cinzas e mortos
+                    btnExtrair.disabled = true;
+                    btnAbrirRes.disabled = true;
+                    document.getElementById('area-resposta').style.display = 'none';
+                
+                } else if (estado.status === 'respondendo') {
+                    txtStatus.innerHTML = '<i class="fa-solid fa-database"></i> SISTEMA GRAVANDO RESPOSTAS NA NUVEM...';
+                    txtStatus.style.color = 'var(--accent-blue)';
+                    btnExtrair.disabled = true;
+                    btnVerificar.disabled = true; 
                     btnAbrirRes.disabled = false; 
-                    btnParar.style.display = 'none'; 
                 }
             }
         });
 
+        // 3. Inteligência do Captcha Auto-Destrutível
         socket.on('nova_imagem', function(dados) { 
-            document.getElementById('area-captcha').style.display = 'block';
+            const areaCaptcha = document.getElementById('area-captcha');
+            areaCaptcha.style.display = 'block';
             document.getElementById('imagem-captcha').src = "data:image/png;base64," + dados.imagem; 
-            window.scrollTo({ top: document.getElementById('area-captcha').offsetTop - 20, behavior: 'smooth' });
+            window.scrollTo({ top: areaCaptcha.offsetTop - 20, behavior: 'smooth' });
+
+            // Se o servidor não mandar uma print nova em 5 segundos, o captcha some!
+            clearTimeout(timerCaptcha);
+            timerCaptcha = setTimeout(() => {
+                areaCaptcha.style.display = 'none';
+            }, 5000);
         });
 
         document.getElementById('imagem-captcha').addEventListener('click', function(event) {
@@ -249,11 +287,15 @@
 
         function ligarRobo() { socket.emit('comando_direto', { modo: 'ligar_robo' }); }
         function executarTarefa(modo) { socket.emit('comando_direto', { modo: modo }); }
-        function solicitarParada() { 
+        
+        function solicitarParada(btnElement) { 
             socket.emit('comando_direto', { modo: 'solicitar_parada' }); 
-            document.getElementById('btn-parar').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> FORÇANDO PARADA...'; 
-            document.getElementById('btn-parar').disabled = true; 
+            if(btnElement) {
+                btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> FORÇANDO PARADA...'; 
+                btnElement.disabled = true; 
+            }
         }
+        
         function mostrarFormResposta() { document.getElementById('area-resposta').style.display = 'block'; }
 
         function gerarCamposItens() {
