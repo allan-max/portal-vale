@@ -3,395 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Controle | Robô Coupa</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>MAESTRO | Portais Automatizados</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <style>
-        :root {
-            /* Tema Dark Industrial Pro */
-            --bg-base: #0a0a0a;
-            --bg-panel: #141414;
-            --bg-input: #1f1f1f;
-            --border: #333333;
-            
-            --text-main: #e0e0e0;
-            --text-dim: #888888;
-            
-            /* Cores de Alerta (Estilo Vale) */
-            --vale-green: #00c853;
-            --vale-yellow: #ffd600;
-            --alert-red: #ff3d00;
-            --accent-blue: #2962ff;
-        }
-
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-base); color: var(--text-main); margin: 0; padding: 40px 20px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 950px; }
-        
-        /* Header Tech */
-        .header { text-align: left; margin-bottom: 30px; border-bottom: 2px solid var(--border); padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;}
-        .header h1 { font-family: 'Inter', sans-serif; font-size: 28px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin: 0; color: #fff; }
-        .header h1 span { color: var(--vale-green); }
-        
-        .badge { background: #333; color: var(--vale-yellow); padding: 5px 15px; border-radius: 4px; font-family: 'Roboto Mono', monospace; font-size: 14px; font-weight: 700; display: none; border: 1px solid var(--vale-yellow); }
-
-        /* Painéis (Cards) */
-        .card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; padding: 25px; margin-bottom: 20px; }
-        .card-title { font-family: 'Roboto Mono', monospace; font-size: 16px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; margin-top: 0; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        
-        /* Botões Estilo Hardware */
-        .btn { font-family: 'Roboto Mono', monospace; padding: 15px 25px; font-size: 14px; font-weight: 700; text-transform: uppercase; border: 1px solid transparent; border-radius: 4px; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 10px; letter-spacing: 0.5px;}
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .btn:hover:not(:disabled) { transform: translateY(-2px); }
-        
-        .btn-large { width: 100%; font-size: 16px; padding: 18px; margin-bottom: 15px; }
-        
-        .btn-power { background: transparent; color: var(--vale-yellow); border-color: var(--vale-yellow); }
-        .btn-power:hover:not(:disabled) { background: rgba(255, 214, 0, 0.1); box-shadow: 0 0 15px rgba(255, 214, 0, 0.2); }
-        
-        .btn-extract { background: rgba(0, 200, 83, 0.1); color: var(--vale-green); border-color: var(--vale-green); }
-        .btn-extract:hover:not(:disabled) { background: rgba(0, 200, 83, 0.2); box-shadow: 0 0 15px rgba(0, 200, 83, 0.2); }
-        
-        .btn-verify { background: rgba(41, 98, 255, 0.1); color: #448aff; border-color: #448aff; }
-        .btn-verify:hover:not(:disabled) { background: rgba(41, 98, 255, 0.2); box-shadow: 0 0 15px rgba(41, 98, 255, 0.2); }
-        
-        .btn-respond { background: #fff; color: #000; border-color: #fff; }
-        .btn-respond:hover:not(:disabled) { background: #e0e0e0; }
-        
-        .btn-stop { background: rgba(255, 61, 0, 0.1); color: var(--alert-red); border-color: var(--alert-red); }
-        .btn-stop:hover:not(:disabled) { background: rgba(255, 61, 0, 0.2); box-shadow: 0 0 15px rgba(255, 61, 0, 0.2); }
-        
-        .botoes-acao { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
-
-        /* Formulário Hacker */
-        .form-container { display: none; margin-top: 25px; padding-top: 25px; border-top: 1px dashed var(--border); }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .form-group { margin-bottom: 20px; text-align: left; }
-        .form-group label { display: block; font-family: 'Roboto Mono', monospace; margin-bottom: 8px; color: var(--text-dim); font-size: 13px; text-transform: uppercase;}
-        .form-group input { width: 100%; padding: 14px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-input); color: #fff; font-size: 15px; box-sizing: border-box; outline: none; transition: 0.2s; font-family: 'Roboto Mono', monospace;}
-        .form-group input:focus { border-color: var(--vale-green); }
-        
-        /* Campos de Item Escuros */
-        .caixa-item { background: #1a1a1a; border-left: 3px solid var(--vale-green); padding: 20px; margin-bottom: 15px; border-radius: 0 4px 4px 0;}
-        .caixa-item-titulo { color: #fff; font-weight: 700; margin-bottom: 15px; display: block; font-family: 'Roboto Mono', monospace; font-size: 14px;}
-
-        /* Arquivos */
-        input[type=file]::file-selector-button { border: 1px solid var(--border); background: var(--bg-base); color: #fff; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-right: 15px; transition: 0.2s; font-family: 'Roboto Mono', monospace; text-transform: uppercase; font-size: 12px;}
-        input[type=file]::file-selector-button:hover { border-color: #fff; }
-        
-        .arquivo-item { background: var(--bg-input); padding: 10px 15px; margin: 8px 0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-family: 'Roboto Mono', monospace;}
-        .btn-remover { background: transparent; border: none; color: var(--alert-red); cursor: pointer; font-size: 16px; }
-
-        /* Painel de Progresso / Logs */
-        .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .status-box { background: var(--bg-input); border-radius: 4px; padding: 20px; border: 1px solid var(--border);}
-        .status-box h4 { margin: 0 0 15px 0; display: flex; align-items: center; gap: 10px; font-family: 'Roboto Mono', monospace; font-size: 14px; text-transform: uppercase; color: var(--text-dim);}
-        .status-box ul { list-style: none; padding: 0; margin: 0; font-family: 'Roboto Mono', monospace; font-size: 13px;}
-        .status-box ul li { padding: 10px; border-bottom: 1px dashed var(--border); display: flex; align-items: center; gap: 10px; color: #fff;}
-        .status-box ul li:last-child { border-bottom: none; }
-
-        /* Barra de Status Inferior */
-        .barra-status { background: #000; border-top: 1px solid var(--border); padding: 15px 20px; display: flex; align-items: center; gap: 15px; position: fixed; bottom: 0; left: 0; right: 0; font-family: 'Roboto Mono', monospace; font-size: 13px; z-index: 100;}
-        .status-dot { width: 10px; height: 10px; background-color: var(--vale-green); border-radius: 50%; box-shadow: 0 0 8px var(--vale-green); animation: blink 2s infinite;}
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .status-dot.offline { background-color: var(--alert-red); box-shadow: 0 0 8px var(--alert-red); animation: none; }
-
-        /* Captcha */
-        #area-captcha { display: none; border: 1px solid var(--alert-red); background: rgba(255, 61, 0, 0.05); }
-        #imagem-captcha { border-radius: 4px; cursor: crosshair; max-width: 100%; border: 1px solid var(--alert-red); margin-top: 15px;}
-    </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body onload="gerarCamposItens()">
+<body class="pagina-login">
 
-    <div class="container">
-        
-        <div class="header">
-            <div>
-                <h1>Terminal <span>Coupa</span></h1>
-                <div style="color: var(--text-dim); font-family: 'Roboto Mono', monospace; font-size: 13px; margin-top: 8px;">> _SISTEMA_DE_AUTOMACAO_V2.0</div>
-            </div>
-            <div id="badge-fila" class="badge">FILA: 0</div>
-        </div>
+    <div id="particles-js"></div>
 
-        <button id="btn-ligar" onclick="ligarRobo()" class="btn btn-large btn-power">
-            <i class="fa-solid fa-power-off"></i> Iniciar Conexão Segura
-        </button>
-        
-        <div id="painel-tarefas" class="card" style="display: none;">
-            <h3 id="txt-status" class="card-title" style="color: var(--vale-green);">
-                <i class="fa-solid fa-terminal"></i> STATUS: PRONTO PARA COMANDOS
-            </h3>
-            
-            <div class="botoes-acao">
-                <button id="btn-extrair" onclick="executarTarefa('extrair')" class="btn btn-extract"><i class="fa-solid fa-download"></i> Extrair Cotações</button>
-                <button id="btn-verificar" onclick="executarTarefa('verificar')" class="btn btn-verify"><i class="fa-solid fa-check-double"></i> Verificar Respostas</button>
-                <button id="btn-abrir-res" onclick="mostrarFormResposta()" class="btn btn-respond"><i class="fa-solid fa-bolt"></i> Responder Evento(s)</button>
-            </div>
-            
-            <button id="btn-parar" onclick="solicitarParada()" class="btn btn-large btn-stop" style="display: none; margin-top: 20px;">
-                <i class="fa-solid fa-triangle-exclamation"></i> ABORTAR E SALVAR (PARADA SEGURA)
-            </button>
-            
-            <div id="area-resposta" class="form-container">
-                <h3 class="card-title" style="color: #fff;"><i class="fa-solid fa-code-commit"></i> ENTRADA DE DADOS</h3>
-                
-                <form id="formResponder">
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label style="color: var(--vale-yellow);">Nº DO EVENTO (Separados por vírgula para Múltiplos)</label>
-                            <input type="text" id="res_evento" required placeholder="Ex: 165060, 165061, 165062">
-                        </div>
-                        <div class="form-group">
-                            <label>QTD. MÁXIMA DE ITENS NA TELA</label>
-                            <input type="number" id="res_qtd_itens" min="1" value="1" required onchange="gerarCamposItens()">
-                        </div>
-                    </div>
-                    
-                    <p style="font-size: 12px; color: var(--text-dim); font-family: 'Roboto Mono', monospace; margin-bottom: 25px;">> Deixe em branco os itens que o robô deve pular.</p>
-
-                    <div id="container-itens"></div>
-
-                    <div class="grid-2" style="margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border);">
-                        <div class="form-group">
-                            <label><i class="fa-solid fa-paperclip"></i> INJETAR DATASHEET (.PDF)</label>
-                            <input type="file" id="res_datasheet" accept=".pdf" multiple onchange="adicionarArquivos(event, 'ds')">
-                            <div id="lista-ds" style="margin-top: 15px;"></div>
-                        </div>
-                        <div class="form-group">
-                            <label><i class="fa-solid fa-paperclip"></i> INJETAR DAV (.PDF)</label>
-                            <input type="file" id="res_dav" accept=".pdf" multiple onchange="adicionarArquivos(event, 'dav')">
-                            <div id="lista-dav" style="margin-top: 15px;"></div>
-                        </div>
-                    </div>
-
-                    <button type="button" onclick="enviarResposta()" class="btn btn-large btn-respond" style="margin-top: 15px; margin-bottom: 0;">
-                        <i class="fa-solid fa-server"></i> TRANSMITIR PARA A FILA
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <div id="painel-progresso" class="card" style="display: none;">
-            <h3 class="card-title"><i class="fa-solid fa-network-wired"></i> MONITORAMENTO DA FILA</h3>
-            <div class="status-grid">
-                <div class="status-box">
-                    <h4 style="color: var(--vale-yellow);">[ PENDENTES ]</h4>
-                    <ul id="lista-pendentes"></ul>
-                </div>
-                <div class="status-box">
-                    <h4 style="color: var(--vale-green);">[ PROCESSADOS ]</h4>
-                    <ul id="lista-concluidos"></ul>
-                </div>
-            </div>
+    <div class="login-container">
+        <div class="login-left">
+            <img src="logo-maestro.png" alt="Logo MAESTRO" class="img-logo">
+            <h1>MAESTRO</h1>
+            <div class="subtitle-maestro">Módulo de Automação Específico de Sites<br> e Tratamento de Recursos Online</div>
         </div>
         
-        <div id="area-captcha" class="card">
-            <h3 class="card-title" style="color: var(--alert-red);"><i class="fa-solid fa-hand"></i> INTERVENÇÃO MANUAL REQUERIDA</h3>
-            <p style="margin: 0; color: #fff; font-family: 'Roboto Mono', monospace; font-size: 13px;">> Resolver Captcha para prosseguir com a automação:</p>
-            <img id="imagem-captcha" src="" alt="Tela Captcha">
+        <div class="login-right">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                <i class="fa-solid fa-network-wired" style="color: #ff6b9d;"></i>
+                <h2>Portais.MAESTRO</h2>
+            </div>
+            <p>Selecione o ambiente para iniciar a automação.</p>
+            
+            <div class="form-box" style="margin-top: 20px;">
+                <label><i class="fa-solid fa-globe"></i> Portal</label>
+                <select id="seletor-portal" onchange="verificarSelecao()">
+                    <option value="" disabled selected>Selecione seu ambiente...</option>
+                    <option value="coupa">Coupa Enterprise</option>
+                    <option value="vale">Portal Vale Metais</option>
+                    <option value="ariba">SAP Ariba</option>
+                    <option value="findes">Sistema Findes</option>
+                    <option value="me">Mercado Eletrônico</option>
+                </select>
+                <i class="fa-solid fa-chevron-down select-arrow"></i>
+            </div>
+            
+            <button id="btn-entrar" class="btn-entrar" disabled onclick="acessarSistema()">ENTRAR NO SISTEMA</button>
         </div>
-
     </div>
 
-    <div class="barra-status">
-        <div id="indicador-status" class="status-dot offline"></div>
-        <span id="log">Aguardando conexão com o Servidor Node...</span>
-    </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script>
-        const socket = io();
-        socket.emit('sou_frontend'); 
-        let arquivosDS = []; let arquivosDAV = [];
-
-        // === SINCRONIZAÇÃO EM TEMPO REAL ===
-        socket.on('sincronizar_estado', function(dados) {
-            const estado = dados.estado;
-            const msg = dados.mensagem;
-            
-            const dot = document.getElementById('indicador-status');
-            if (estado.status === 'desligado' || !msg) { dot.classList.add('offline'); } 
-            else { dot.classList.remove('offline'); }
-            
-            if (msg) document.getElementById('log').innerText = `> ${msg}`;
-
-            const badgeFila = document.getElementById('badge-fila');
-            if (estado.tamanho_fila > 0) {
-                badgeFila.style.display = 'inline-block';
-                badgeFila.innerText = `FILA: ${estado.tamanho_fila}`;
-            } else { badgeFila.style.display = 'none'; }
-
-            const painelProgresso = document.getElementById('painel-progresso');
-            if (estado.fila_pendente.length > 0 || estado.historico_respondidos.length > 0) {
-                painelProgresso.style.display = 'block';
-                document.getElementById('lista-pendentes').innerHTML = estado.fila_pendente.map(e => `<li><i class="fa-solid fa-spinner fa-spin" style="color:var(--vale-yellow)"></i> EVT_${e}</li>`).join('');
-                document.getElementById('lista-concluidos').innerHTML = estado.historico_respondidos.map(e => {
-                    if(e.includes('Falhou')) return `<li style="color:var(--alert-red)"><i class="fa-solid fa-xmark"></i> ${e}</li>`;
-                    return `<li style="color:var(--vale-green)"><i class="fa-solid fa-check"></i> EVT_${e}</li>`;
-                }).join('');
-            } else { painelProgresso.style.display = 'none'; }
-
-            if (estado.status !== 'logando') { document.getElementById('area-captcha').style.display = 'none'; }
-
-            const btnLigar = document.getElementById('btn-ligar');
-            const painelTarefas = document.getElementById('painel-tarefas');
-            const txtStatus = document.getElementById('txt-status');
-            
-            if (estado.status === 'desligado') {
-                btnLigar.style.display = 'inline-flex';
-                btnLigar.disabled = false; btnLigar.innerHTML = '<i class="fa-solid fa-power-off"></i> INICIAR CONEXÃO SEGURA';
-                painelTarefas.style.display = 'none';
-            } else if (estado.status === 'logando') {
-                btnLigar.disabled = true; btnLigar.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> AUTENTICANDO NO SISTEMA...';
-            } else {
-                btnLigar.style.display = 'none';
-                painelTarefas.style.display = 'block';
-                
-                const btnExtrair = document.getElementById('btn-extrair');
-                const btnVerificar = document.getElementById('btn-verificar');
-                const btnAbrirRes = document.getElementById('btn-abrir-res');
-                const btnParar = document.getElementById('btn-parar');
-
-                if (estado.status === 'ocioso') {
-                    txtStatus.innerHTML = '<i class="fa-solid fa-terminal"></i> STATUS: PRONTO PARA COMANDOS';
-                    txtStatus.style.color = 'var(--vale-green)';
-                    btnExtrair.disabled = false; btnVerificar.disabled = false; btnAbrirRes.disabled = false;
-                    btnParar.style.display = 'none';
-                } else if (estado.status === 'extraindo' || estado.status === 'verificando') {
-                    txtStatus.innerHTML = `<i class="fa-solid fa-gear fa-spin"></i> STATUS: PROCESSANDO (${estado.status.toUpperCase()})`;
-                    txtStatus.style.color = 'var(--vale-yellow)';
-                    btnExtrair.disabled = true; btnVerificar.disabled = true; btnAbrirRes.disabled = true;
-                    btnParar.style.display = 'inline-flex'; 
-                    document.getElementById('area-resposta').style.display = 'none';
-                } else if (estado.status === 'respondendo') {
-                    txtStatus.innerHTML = '<i class="fa-solid fa-database"></i> STATUS: GRAVANDO RESPOSTAS NA NUVEM';
-                    txtStatus.style.color = '#448aff';
-                    btnExtrair.disabled = true; btnVerificar.disabled = true; 
-                    btnAbrirRes.disabled = false; 
-                    btnParar.style.display = 'none'; 
+        // Configuração exata para o efeito "Network"
+        particlesJS("particles-js", {
+            "particles": {
+                "number": { "value": 70, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#ffffff" },
+                "shape": { "type": "circle" },
+                "opacity": { "value": 0.3, "random": false },
+                "size": { "value": 3, "random": true },
+                "line_linked": { "enable": true, "distance": 150, "color": "#ffffff", "opacity": 0.2, "width": 1 },
+                "move": { "enable": true, "speed": 1.5, "direction": "none", "random": false, "straight": false, "out_mode": "out", "bounce": false }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": { "enable": true, "mode": "grab" },
+                    "onclick": { "enable": true, "mode": "push" }, 
+                    "resize": true
+                },
+                "modes": {
+                    "grab": { "distance": 140, "line_linked": { "opacity": 0.8 } },
+                    "push": { "particles_nb": 3 }
                 }
-            }
+            },
+            "retina_detect": true
         });
 
-        // REVELA O CAPTCHA
-        socket.on('nova_imagem', function(dados) { 
-            document.getElementById('area-captcha').style.display = 'block';
-            document.getElementById('imagem-captcha').src = "data:image/png;base64," + dados.imagem; 
-            window.scrollTo({ top: document.getElementById('area-captcha').offsetTop - 20, behavior: 'smooth' });
-        });
-
-        document.getElementById('imagem-captcha').addEventListener('click', function(event) {
-            const rect = this.getBoundingClientRect();
-            socket.emit('clique_no_captcha', { x: Math.round(event.offsetX * (this.naturalWidth / rect.width)), y: Math.round(event.offsetY * (this.naturalHeight / rect.height)) });
-        });
-
-        function ligarRobo() { socket.emit('comando_direto', { modo: 'ligar_robo' }); }
-        function executarTarefa(modo) { socket.emit('comando_direto', { modo: modo }); }
-        function solicitarParada() { 
-            socket.emit('comando_direto', { modo: 'solicitar_parada' }); 
-            document.getElementById('btn-parar').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> FORÇANDO PARADA SEGURA E SALVANDO DADOS...'; 
-            document.getElementById('btn-parar').disabled = true; 
-        }
-        function mostrarFormResposta() { 
-            document.getElementById('area-resposta').style.display = 'block'; 
+        // Lógica de Redirecionamento
+        function verificarSelecao() {
+            const seletor = document.getElementById('seletor-portal');
+            document.getElementById('btn-entrar').disabled = (seletor.value === "");
         }
 
-        function gerarCamposItens() {
-            const qtd = parseInt(document.getElementById('res_qtd_itens').value) || 1;
-            const container = document.getElementById('container-itens');
-            container.innerHTML = ''; 
-            for(let i=1; i<=qtd; i++) {
-                container.innerHTML += `
-                    <div class="caixa-item">
-                        <span class="caixa-item-titulo">[ ITEM_0${i} ]</span>
-                        <div class="grid-2">
-                            <div class="form-group" style="margin: 0;">
-                                <label>VALOR (R$)</label>
-                                <input type="text" id="res_preco_${i}" placeholder="0,00">
-                            </div>
-                            <div class="form-group" style="margin: 0;">
-                                <label>PRAZO (DIAS)</label>
-                                <input type="number" id="res_prazo_${i}" placeholder="0">
-                            </div>
-                        </div>
-                    </div>`;
+        function acessarSistema() {
+            const seletor = document.getElementById('seletor-portal');
+            const portal = seletor.value;
+            if (portal) {
+                window.location.href = portal + '.html';
             }
-        }
-
-        function adicionarArquivos(event, tipo) {
-            const files = event.target.files;
-            for(let i = 0; i < files.length; i++) {
-                if(tipo === 'ds') arquivosDS.push(files[i]);
-                else arquivosDAV.push(files[i]);
-            }
-            event.target.value = ""; atualizarListasNaTela(tipo);
-        }
-
-        function removerArquivo(tipo, index) {
-            if(tipo === 'ds') arquivosDS.splice(index, 1);
-            else arquivosDAV.splice(index, 1);
-            atualizarListasNaTela(tipo);
-        }
-
-        function atualizarListasNaTela(tipo) {
-            const div = document.getElementById(tipo === 'ds' ? 'lista-ds' : 'lista-dav');
-            const lista = tipo === 'ds' ? arquivosDS : arquivosDAV;
-            div.innerHTML = "";
-            lista.forEach((arquivo, index) => {
-                div.innerHTML += `
-                    <div class="arquivo-item">
-                        <span><i class="fa-regular fa-file" style="color:var(--text-dim);"></i> ${arquivo.name}</span> 
-                        <button type="button" class="btn-remover" onclick="removerArquivo('${tipo}', ${index})"><i class="fa-solid fa-xmark"></i></button>
-                    </div>`;
-            });
-        }
-
-        // === NOVA FUNÇÃO: MANDA VÁRIOS EVENTOS EM LOTE ===
-        async function enviarResposta() {
-            const campoEventos = document.getElementById('res_evento').value;
-            if(!campoEventos) { alert("INFORME O NÚMERO DO EVENTO!"); return; }
-
-            // Separa os números digitados por vírgula e remove espaços
-            const listaEventos = campoEventos.split(',').map(e => e.trim()).filter(e => e !== "");
-
-            const qtd = parseInt(document.getElementById('res_qtd_itens').value) || 1;
-            let precos = []; let prazos = [];
-            
-            for(let i=1; i<=qtd; i++) {
-                precos.push(document.getElementById(`res_preco_${i}`).value);
-                prazos.push(document.getElementById(`res_prazo_${i}`).value);
-            }
-
-            const btnEnviar = document.querySelector('button[onclick="enviarResposta()"]');
-            const textoOriginal = btnEnviar.innerHTML;
-            btnEnviar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> TRANSMITINDO PACOTES...';
-            btnEnviar.disabled = true;
-
-            // Envia cada evento para a Nuvem de forma independente
-            for (const eventoId of listaEventos) {
-                const formData = new FormData();
-                formData.append('evento', eventoId);
-                formData.append('precos', JSON.stringify(precos));
-                formData.append('prazos', JSON.stringify(prazos));
-                for(let i=0; i < arquivosDS.length; i++) { formData.append('datasheet', arquivosDS[i]); }
-                for(let i=0; i < arquivosDAV.length; i++) { formData.append('dav', arquivosDAV[i]); }
-
-                try {
-                    await fetch('/api/responder', { method: 'POST', body: formData });
-                } catch(err) {
-                    console.error("Falha ao transmitir o evento: " + eventoId);
-                }
-            }
-
-            // Restaura a interface após enviar tudo
-            btnEnviar.innerHTML = textoOriginal;
-            btnEnviar.disabled = false;
-            document.getElementById('area-resposta').style.display = 'none';
-            document.getElementById('res_evento').value = '';
-            arquivosDS = []; arquivosDAV = [];
-            atualizarListasNaTela('ds'); atualizarListasNaTela('dav');
-            window.scrollTo({ top: document.getElementById('painel-progresso').offsetTop - 20, behavior: 'smooth' });
         }
     </script>
 </body>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAESTRO | Coupa Enterprise</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+</head>
+<body class="pagina-painel" onload="gerarCamposItens()">
+
+    <div class="container">
+        
+        <div class="header">
+            <div class="header-title-box">
+                <img src="logo-maestro.png" alt="Logo MAESTRO Mini" class="header-logo-mini">
+                <div>
+                    <h1>Dashboard <span>Coupa</span></h1>
+                    <div style="color: var(--text-dim); font-family: 'Roboto Mono', monospace; font-size: 11px; margin-top: 4px;">WORKSPACE // AMBIENTE PROTEGIDO</div>
+                </div>
+            </div>
+            <a href="index.html" class="btn-voltar"><i class="fa-solid fa-right-from-bracket"></i> Desconectar Módulo</a>
+        </div>
+        
+        <div class="dashboard-grid">
+            
+            <div class="col-side">
+                
+                <div class="glass-card" style="margin-bottom: 25px;">
+                    <h3 class="card-title"><i class="fa-solid fa-server"></i> Controle de Conexão</h3>
+                    <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 20px; line-height: 1.5;">Estabeleça uma conexão segura com o servidor Python local para liberar os módulos operacionais.</p>
+                    
+                    <button id="btn-ligar" onclick="ligarRobo()" class="btn btn-large btn-power">
+                        <i class="fa-solid fa-power-off"></i> Iniciar Servidor
+                    </button>
+                    
+                    <button id="btn-parar" onclick="solicitarParada()" class="btn btn-large btn-stop" style="display: none; margin-top: 10px;">
+                        <i class="fa-solid fa-hand"></i> Abortar Processo
+                    </button>
+                </div>
+
+                <div class="glass-card">
+                    <h3 class="card-title"><i class="fa-solid fa-microchip"></i> Status do Sistema</h3>
+                    
+                    <div class="sys-info-row">
+                        <span class="sys-label">Ambiente</span>
+                        <span class="sys-value" style="color: var(--accent-blue);">PRODUÇÃO</span>
+                    </div>
+                    <div class="sys-info-row">
+                        <span class="sys-label">Portal Alvo</span>
+                        <span class="sys-value">Coupa Vale S.A.</span>
+                    </div>
+                    <div class="sys-info-row">
+                        <span class="sys-label">Fila Atual</span>
+                        <span class="sys-value" id="info-fila">0 Processos</span>
+                    </div>
+                    <div class="sys-info-row" style="border: none; margin-bottom: 0;">
+                        <span class="sys-label">Sincronização</span>
+                        <span class="sys-value" id="info-sync">Aguardando...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-main">
+                
+                <div class="glass-card" style="min-height: 300px;">
+                    
+                    <div id="overlay-lock" class="lock-screen">
+                        <i class="fa-solid fa-lock"></i>
+                        <h3>Módulo Bloqueado</h3>
+                        <p>Aguardando autenticação do servidor...</p>
+                    </div>
+
+                    <h3 id="txt-status" class="card-title" style="color: var(--text-main);">
+                        <i class="fa-solid fa-terminal"></i> MÓDULOS DE AUTOMAÇÃO
+                    </h3>
+                    
+                    <div class="botoes-acao" style="margin-top: 25px;">
+                        <button id="btn-extrair" onclick="executarTarefa('extrair')" class="btn btn-extract"><i class="fa-solid fa-download"></i> Extrair Cotações</button>
+                        <button id="btn-verificar" onclick="executarTarefa('verificar')" class="btn btn-verify"><i class="fa-solid fa-check-double"></i> Verificar Dados</button>
+                        <button id="btn-abrir-res" onclick="mostrarFormResposta()" class="btn btn-respond"><i class="fa-solid fa-bolt"></i> Responder Eventos</button>
+                    </div>
+                    
+                    <div id="area-resposta" class="form-container">
+                        <h3 class="card-title" style="color: #fff; margin-bottom: 25px; border-bottom: none;"><i class="fa-solid fa-code-commit"></i> PACOTE DE TRANSMISSÃO</h3>
+                        
+                        <form id="formResponder">
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>Nº DO EVENTO (Separar por vírgula)</label>
+                                    <input type="text" id="res_evento" required placeholder="Ex: 165060, 165061">
+                                </div>
+                                <div class="form-group">
+                                    <label>QTD. DE ITENS NA TELA</label>
+                                    <input type="number" id="res_qtd_itens" min="1" value="1" required onchange="gerarCamposItens()">
+                                </div>
+                            </div>
+                            
+                            <p style="font-size: 11px; color: var(--text-dim); font-family: 'Roboto Mono', monospace; margin-bottom: 25px;">> Deixe vazio os campos que o robô deve pular automaticamente.</p>
+
+                            <div id="container-itens"></div>
+
+                            <div class="grid-2" style="margin-top: 25px; padding-top: 20px; border-top: 1px dashed var(--border-glass);">
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-paperclip" style="color: var(--alert-red)"></i> DATASHEET (.PDF)</label>
+                                    <input type="file" id="res_datasheet" accept=".pdf" multiple onchange="adicionarArquivos(event, 'ds')">
+                                    <div id="lista-ds" style="margin-top: 15px;"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label><i class="fa-solid fa-paperclip" style="color: var(--alert-red)"></i> DAV (.PDF)</label>
+                                    <input type="file" id="res_dav" accept=".pdf" multiple onchange="adicionarArquivos(event, 'dav')">
+                                    <div id="lista-dav" style="margin-top: 15px;"></div>
+                                </div>
+                            </div>
+
+                            <button type="button" onclick="enviarResposta()" class="btn btn-large btn-respond" style="margin-top: 15px;">
+                                <i class="fa-solid fa-server"></i> ENVIAR PARA A FILA
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="painel-progresso" class="glass-card" style="display: none; margin-top: 25px;">
+                    <h3 class="card-title"><i class="fa-solid fa-network-wired"></i> MONITOR DE PROCESSOS</h3>
+                    <div class="status-grid">
+                        <div class="status-box">
+                            <h4><i class="fa-solid fa-clock"></i> NA FILA</h4>
+                            <ul id="lista-pendentes"></ul>
+                        </div>
+                        <div class="status-box">
+                            <h4><i class="fa-solid fa-check-double" style="color: var(--vale-green)"></i> FINALIZADOS</h4>
+                            <ul id="lista-concluidos"></ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="area-captcha" class="glass-card">
+                    <h3 class="card-title" style="color: var(--alert-red);"><i class="fa-solid fa-shield-halved"></i> INTERVENÇÃO DE SEGURANÇA</h3>
+                    <p style="margin: 0; color: var(--text-main); font-family: 'Roboto Mono', monospace; font-size: 12px; line-height: 1.6;">> O sistema da Vale bloqueou a automação temporariamente. Clique na imagem abaixo para resolver o desafio e liberar o fluxo:</p>
+                    <img id="imagem-captcha" src="" alt="Tela Captcha">
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="barra-status">
+        <div id="indicador-status" class="status-dot offline"></div>
+        <span id="log">Conectando ao núcleo maestro...</span>
+    </div>
+
+    <script>
+        // === LÓGICA DO ROBÔ ===
+        const socket = io();
+        socket.emit('sou_frontend'); 
+        let arquivosDS = []; let arquivosDAV = [];
+
+        socket.on('sincronizar_estado', function(dados) {
+            const estado = dados.estado;
+            const msg = dados.mensagem;
+            
+            const dot = document.getElementById('indicador-status');
+            if (estado.status === 'desligado' || !msg) { dot.classList.add('offline'); } 
+            else { dot.classList.remove('offline'); }
+            
+            if (msg) document.getElementById('log').innerText = `> ${msg}`;
+
+            // Atualiza o card de info do sistema
+            document.getElementById('info-fila').innerText = `${estado.tamanho_fila} Processos`;
+            const dataHora = new Date().toLocaleTimeString('pt-BR');
+            document.getElementById('info-sync').innerText = `Hoje às ${dataHora}`;
+
+            const painelProgresso = document.getElementById('painel-progresso');
+            if (estado.fila_pendente.length > 0 || estado.historico_respondidos.length > 0) {
+                painelProgresso.style.display = 'block';
+                document.getElementById('lista-pendentes').innerHTML = estado.fila_pendente.map(e => `<li><i class="fa-solid fa-spinner fa-spin" style="color:var(--vale-yellow)"></i> EVT_${e}</li>`).join('');
+                document.getElementById('lista-concluidos').innerHTML = estado.historico_respondidos.map(e => {
+                    if(e.includes('Falhou')) return `<li style="color:var(--alert-red)"><i class="fa-solid fa-xmark"></i> ${e}</li>`;
+                    return `<li><i class="fa-solid fa-check" style="color:var(--vale-green)"></i> EVT_${e}</li>`;
+                }).join('');
+            } else { painelProgresso.style.display = 'none'; }
+
+            if (estado.status !== 'logando') { document.getElementById('area-captcha').style.display = 'none'; }
+
+            const btnLigar = document.getElementById('btn-ligar');
+            const txtStatus = document.getElementById('txt-status');
+            const overlayLock = document.getElementById('overlay-lock');
+            const btnParar = document.getElementById('btn-parar');
+            const btnExtrair = document.getElementById('btn-extrair');
+            const btnVerificar = document.getElementById('btn-verificar');
+            const btnAbrirRes = document.getElementById('btn-abrir-res');
+            
+            if (estado.status === 'desligado') {
+                btnLigar.disabled = false; 
+                btnLigar.classList.remove('conectado');
+                btnLigar.innerHTML = '<i class="fa-solid fa-power-off"></i> INICIAR SERVIDOR';
+                overlayLock.style.opacity = '1';
+                overlayLock.style.pointerEvents = 'all';
+                overlayLock.innerHTML = '<i class="fa-solid fa-lock"></i><h3>Módulo Bloqueado</h3><p>Aguardando autenticação do servidor...</p>';
+                btnParar.style.display = 'none';
+            } else if (estado.status === 'logando') {
+                btnLigar.disabled = true; 
+                btnLigar.classList.remove('conectado');
+                btnLigar.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> AUTENTICANDO...';
+                overlayLock.innerHTML = '<i class="fa-solid fa-fingerprint fa-bounce" style="color:var(--accent-blue)"></i><h3 style="color:var(--accent-blue)">Autenticando</h3><p>Validando credenciais de acesso...</p>';
+            } else {
+                btnLigar.disabled = true; 
+                btnLigar.classList.add('conectado');
+                btnLigar.innerHTML = '<i class="fa-solid fa-link"></i> SISTEMA ONLINE';
+                
+                // Abre o cadeado suavemente
+                overlayLock.style.opacity = '0';
+                setTimeout(() => { overlayLock.style.pointerEvents = 'none'; }, 500);
+                
+                if (estado.status === 'ocioso') {
+                    txtStatus.innerHTML = '<i class="fa-solid fa-terminal"></i> STATUS: AGUARDANDO COMANDOS';
+                    txtStatus.style.color = 'var(--vale-green)';
+                    btnExtrair.disabled = false; btnVerificar.disabled = false; btnAbrirRes.disabled = false;
+                    btnParar.style.display = 'none';
+                } else if (estado.status === 'extraindo' || estado.status === 'verificando') {
+                    txtStatus.innerHTML = `<i class="fa-solid fa-gear fa-spin"></i> STATUS: PROCESSANDO (${estado.status.toUpperCase()})`;
+                    txtStatus.style.color = 'var(--vale-yellow)';
+                    btnExtrair.disabled = true; btnVerificar.disabled = true; btnAbrirRes.disabled = true;
+                    btnParar.style.display = 'inline-flex'; 
+                    document.getElementById('area-resposta').style.display = 'none';
+                } else if (estado.status === 'respondendo') {
+                    txtStatus.innerHTML = '<i class="fa-solid fa-database"></i> STATUS: GRAVANDO RESPOSTAS NA NUVEM';
+                    txtStatus.style.color = 'var(--accent-blue)';
+                    btnExtrair.disabled = true; btnVerificar.disabled = true; 
+                    btnAbrirRes.disabled = false; 
+                    btnParar.style.display = 'none'; 
+                }
+            }
+        });
+
+        socket.on('nova_imagem', function(dados) { 
+            document.getElementById('area-captcha').style.display = 'block';
+            document.getElementById('imagem-captcha').src = "data:image/png;base64," + dados.imagem; 
+            window.scrollTo({ top: document.getElementById('area-captcha').offsetTop - 20, behavior: 'smooth' });
+        });
+
+        document.getElementById('imagem-captcha').addEventListener('click', function(event) {
+            const rect = this.getBoundingClientRect();
+            socket.emit('clique_no_captcha', { x: Math.round(event.offsetX * (this.naturalWidth / rect.width)), y: Math.round(event.offsetY * (this.naturalHeight / rect.height)) });
+        });
+
+        function ligarRobo() { socket.emit('comando_direto', { modo: 'ligar_robo' }); }
+        function executarTarefa(modo) { socket.emit('comando_direto', { modo: modo }); }
+        function solicitarParada() { 
+            socket.emit('comando_direto', { modo: 'solicitar_parada' }); 
+            document.getElementById('btn-parar').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> FORÇANDO PARADA...'; 
+            document.getElementById('btn-parar').disabled = true; 
+        }
+        function mostrarFormResposta() { document.getElementById('area-resposta').style.display = 'block'; }
+
+        function gerarCamposItens() {
+            const qtd = parseInt(document.getElementById('res_qtd_itens').value) || 1;
+            const container = document.getElementById('container-itens');
+            container.innerHTML = ''; 
+            for(let i=1; i<=qtd; i++) {
+                container.innerHTML += `
+                    <div class="caixa-item">
+                        <span class="caixa-item-titulo">[ ITEM_0${i} ]</span>
+                        <div class="grid-2">
+                            <div class="form-group" style="margin: 0;">
+                                <label>VALOR UNITÁRIO (R$)</label>
+                                <input type="text" id="res_preco_${i}" placeholder="0,00">
+                            </div>
+                            <div class="form-group" style="margin: 0;">
+                                <label>PRAZO (DIAS)</label>
+                                <input type="number" id="res_prazo_${i}" placeholder="0">
+                            </div>
+                        </div>
+                    </div>`;
+            }
+        }
+
+        function adicionarArquivos(event, tipo) {
+            const files = event.target.files;
+            for(let i = 0; i < files.length; i++) {
+                if(tipo === 'ds') arquivosDS.push(files[i]);
+                else arquivosDAV.push(files[i]);
+            }
+            event.target.value = ""; atualizarListasNaTela(tipo);
+        }
+
+        function removerArquivo(tipo, index) {
+            if(tipo === 'ds') arquivosDS.splice(index, 1);
+            else arquivosDAV.splice(index, 1);
+            atualizarListasNaTela(tipo);
+        }
+
+        function atualizarListasNaTela(tipo) {
+            const div = document.getElementById(tipo === 'ds' ? 'lista-ds' : 'lista-dav');
+            const lista = tipo === 'ds' ? arquivosDS : arquivosDAV;
+            div.innerHTML = "";
+            lista.forEach((arquivo, index) => {
+                div.innerHTML += `
+                    <div class="arquivo-item">
+                        <span><i class="fa-regular fa-file" style="color:var(--text-dim);"></i> ${arquivo.name}</span> 
+                        <button type="button" class="btn-remover" onclick="removerArquivo('${tipo}', ${index})"><i class="fa-solid fa-xmark"></i></button>
+                    </div>`;
+            });
+        }
+
+        async function enviarResposta() {
+            const campoEventos = document.getElementById('res_evento').value;
+            if(!campoEventos) { alert("INFORME O NÚMERO DO EVENTO!"); return; }
+
+            const listaEventos = campoEventos.split(',').map(e => e.trim()).filter(e => e !== "");
+            const qtd = parseInt(document.getElementById('res_qtd_itens').value) || 1;
+            let precos = []; let prazos = [];
+            
+            for(let i=1; i<=qtd; i++) {
+                precos.push(document.getElementById(`res_preco_${i}`).value);
+                prazos.push(document.getElementById(`res_prazo_${i}`).value);
+            }
+
+            const btnEnviar = document.querySelector('button[onclick="enviarResposta()"]');
+            const textoOriginal = btnEnviar.innerHTML;
+            btnEnviar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> TRANSMITINDO PACOTES...';
+            btnEnviar.disabled = true;
+
+            for (const eventoId of listaEventos) {
+                const formData = new FormData();
+                formData.append('evento', eventoId);
+                formData.append('precos', JSON.stringify(precos));
+                formData.append('prazos', JSON.stringify(prazos));
+                for(let i=0; i < arquivosDS.length; i++) { formData.append('datasheet', arquivosDS[i]); }
+                for(let i=0; i < arquivosDAV.length; i++) { formData.append('dav', arquivosDAV[i]); }
+
+                try { await fetch('/api/responder', { method: 'POST', body: formData }); } 
+                catch(err) { console.error("Falha ao transmitir o evento: " + eventoId); }
+            }
+
+            btnEnviar.innerHTML = textoOriginal;
+            btnEnviar.disabled = false;
+            document.getElementById('area-resposta').style.display = 'none';
+            document.getElementById('res_evento').value = '';
+            arquivosDS = []; arquivosDAV = [];
+            atualizarListasNaTela('ds'); atualizarListasNaTela('dav');
+            window.scrollTo({ top: document.getElementById('painel-progresso').offsetTop - 20, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
