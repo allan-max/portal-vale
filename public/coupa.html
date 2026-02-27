@@ -12,17 +12,23 @@
 </head>
 <body class="pagina-painel" onload="gerarCamposItens()">
 
+    <div id="particles-js"></div>
+
     <div class="container">
         
         <div class="header">
             <div class="header-title-box">
-                <img src="logo-maestro.png" alt="Logo MAESTRO Mini" class="header-logo-mini">
+                <img src="CÓDIGO_BASE64_AQUI" alt="Logo MAESTRO Mini" class="header-logo-mini">
                 <div>
-                    <h1>Dashboard <span>Coupa</span></h1>
+                    <h1>Terminal <span>Coupa</span></h1>
                     <div style="color: var(--text-dim); font-family: 'Roboto Mono', monospace; font-size: 11px; margin-top: 4px;">WORKSPACE // AMBIENTE PROTEGIDO</div>
                 </div>
             </div>
-            <a href="index.html" class="btn-voltar"><i class="fa-solid fa-right-from-bracket"></i> Desconectar Módulo</a>
+            
+            <div class="header-toolbar">
+                <div id="badge-fila" class="badge">FILA: 0</div>
+                <a href="index.html" class="btn-voltar" style="margin-bottom: 0;"><i class="fa-solid fa-right-from-bracket"></i> Desconectar</a>
+            </div>
         </div>
         
         <div class="dashboard-grid">
@@ -145,12 +151,22 @@
         <span id="log">Conectando ao núcleo maestro...</span>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
     <script>
+        // Opcional: Se quiser manter o fundo animado na tela do Coupa também, basta descomentar abaixo:
+        /*
+        particlesJS("particles-js", {
+            "particles": { "number": { "value": 70 }, "color": { "value": "#ffffff" }, "opacity": { "value": 0.3 }, "size": { "value": 3 }, "line_linked": { "enable": true, "distance": 150, "color": "#ffffff", "opacity": 0.2, "width": 1 }, "move": { "enable": true, "speed": 1.5 } },
+            "interactivity": { "events": { "onhover": { "enable": true, "mode": "grab" }, "onclick": { "enable": true, "mode": "push" } } }
+        });
+        */
+
         const socket = io();
         socket.emit('sou_frontend'); 
         let arquivosDS = []; let arquivosDAV = [];
         let timerCaptcha; // Variável global para o relógio do Captcha
 
+        // === SINCRONIZAÇÃO DE ESTADO CORRIGIDA ===
         socket.on('sincronizar_estado', function(dados) {
             const estado = dados.estado;
             const msg = dados.mensagem;
@@ -175,7 +191,10 @@
                 }).join('');
             } else { painelProgresso.style.display = 'none'; }
 
-            if (estado.status !== 'logando') { document.getElementById('area-captcha').style.display = 'none'; }
+            // LIMPEZA SEGURA DO CAPTCHA (Só limpa se o robô voltar a ficar ocioso ou desligado)
+            if (estado.status === 'ocioso' || estado.status === 'desligado') {
+                document.getElementById('area-captcha').style.display = 'none';
+            }
 
             const btnLigar = document.getElementById('btn-ligar');
             const txtStatus = document.getElementById('txt-status');
@@ -185,18 +204,21 @@
             const btnVerificar = document.getElementById('btn-verificar');
             const btnAbrirRes = document.getElementById('btn-abrir-res');
             
-            // 1. Resetamos os botões para o padrão "Limpo" a cada atualização
+            // 1. RESETAMOS OS BOTÕES SEMPRE (Garante que eles não fiquem "presos" no botão de Parar)
             btnExtrair.className = 'btn btn-extract';
             btnExtrair.innerHTML = '<i class="fa-solid fa-download"></i> Extrair Cotações';
-            btnExtrair.onclick = () => executarTarefa('extrair');
+            btnExtrair.disabled = false;
+            btnExtrair.onclick = function() { executarTarefa('extrair'); };
 
             btnVerificar.className = 'btn btn-verify';
             btnVerificar.innerHTML = '<i class="fa-solid fa-check-double"></i> Verificar Dados';
-            btnVerificar.onclick = () => executarTarefa('verificar');
+            btnVerificar.disabled = false;
+            btnVerificar.onclick = function() { executarTarefa('verificar'); };
 
             btnAbrirRes.className = 'btn btn-respond';
             btnAbrirRes.innerHTML = '<i class="fa-solid fa-bolt"></i> Responder Eventos';
-            btnAbrirRes.onclick = () => mostrarFormResposta();
+            btnAbrirRes.disabled = false;
+            btnAbrirRes.onclick = function() { mostrarFormResposta(); };
 
             if (estado.status === 'desligado') {
                 btnLigar.disabled = false; 
@@ -218,40 +240,35 @@
                 overlayLock.style.opacity = '0';
                 setTimeout(() => { overlayLock.style.pointerEvents = 'none'; }, 500);
                 
-                // 2. Inteligência de Exclusividade Mútua (Toggle e Bloqueio)
+                // 2. EXCLUSIVIDADE E TOGGLE CORRIGIDOS (Reconhece o comando do Node.js)
                 if (estado.status === 'ocioso') {
                     txtStatus.innerHTML = '<i class="fa-solid fa-terminal"></i> STATUS: AGUARDANDO COMANDOS';
                     txtStatus.style.color = 'var(--vale-green)';
-                    btnExtrair.disabled = false;
-                    btnVerificar.disabled = false;
-                    btnAbrirRes.disabled = false;
                 
-                } else if (estado.status === 'extraindo') {
+                } else if (estado.status === 'extraindo' || estado.status === 'extrair') {
                     txtStatus.innerHTML = '<i class="fa-solid fa-gear fa-spin"></i> ALGUÉM ESTÁ EXTRAINDO DADOS...';
                     txtStatus.style.color = 'var(--vale-yellow)';
                     
-                    // Botão de Extrair vira o botão de PARAR (Vermelho)
-                    btnExtrair.disabled = false;
+                    // Transforma o botão Extrair no botão PARAR
                     btnExtrair.className = 'btn btn-stop';
                     btnExtrair.innerHTML = '<i class="fa-solid fa-hand"></i> PARAR EXTRAÇÃO';
                     btnExtrair.onclick = function() { solicitarParada(this); };
                     
-                    // Demais botões ficam cinzas e mortos
+                    // Trava os demais botões
                     btnVerificar.disabled = true;
                     btnAbrirRes.disabled = true;
                     document.getElementById('area-resposta').style.display = 'none';
                 
-                } else if (estado.status === 'verificando') {
+                } else if (estado.status === 'verificando' || estado.status === 'verificar') {
                     txtStatus.innerHTML = '<i class="fa-solid fa-gear fa-spin"></i> ALGUÉM ESTÁ VERIFICANDO DADOS...';
                     txtStatus.style.color = 'var(--accent-blue)';
                     
-                    // Botão de Verificar vira o botão de PARAR (Vermelho)
-                    btnVerificar.disabled = false;
+                    // Transforma o botão Verificar no botão PARAR
                     btnVerificar.className = 'btn btn-stop';
                     btnVerificar.innerHTML = '<i class="fa-solid fa-hand"></i> PARAR VERIFICAÇÃO';
                     btnVerificar.onclick = function() { solicitarParada(this); };
                     
-                    // Demais botões ficam cinzas e mortos
+                    // Trava os demais botões
                     btnExtrair.disabled = true;
                     btnAbrirRes.disabled = true;
                     document.getElementById('area-resposta').style.display = 'none';
@@ -259,21 +276,24 @@
                 } else if (estado.status === 'respondendo') {
                     txtStatus.innerHTML = '<i class="fa-solid fa-database"></i> SISTEMA GRAVANDO RESPOSTAS NA NUVEM...';
                     txtStatus.style.color = 'var(--accent-blue)';
+                    
                     btnExtrair.disabled = true;
                     btnVerificar.disabled = true; 
-                    btnAbrirRes.disabled = false; 
+                    // Mantém o de responder aberto caso ele queira adicionar mais na fila
                 }
             }
         });
 
-        // 3. Inteligência do Captcha Auto-Destrutível
+        // === TIMERS E INTELIGÊNCIA DO CAPTCHA ===
         socket.on('nova_imagem', function(dados) { 
             const areaCaptcha = document.getElementById('area-captcha');
             areaCaptcha.style.display = 'block';
             document.getElementById('imagem-captcha').src = "data:image/png;base64," + dados.imagem; 
+            
+            // Dá um pequeno pulo suave para a pessoa ver que o captcha chegou
             window.scrollTo({ top: areaCaptcha.offsetTop - 20, behavior: 'smooth' });
 
-            // Se o servidor não mandar uma print nova em 5 segundos, o captcha some!
+            // Se em 5 segundos não chegar outra imagem, ele some sozinho
             clearTimeout(timerCaptcha);
             timerCaptcha = setTimeout(() => {
                 areaCaptcha.style.display = 'none';
@@ -283,6 +303,9 @@
         document.getElementById('imagem-captcha').addEventListener('click', function(event) {
             const rect = this.getBoundingClientRect();
             socket.emit('clique_no_captcha', { x: Math.round(event.offsetX * (this.naturalWidth / rect.width)), y: Math.round(event.offsetY * (this.naturalHeight / rect.height)) });
+            
+            // Bônus UX: Quando o usuário clica, a imagem some instantaneamente para a tela ficar limpa!
+            document.getElementById('area-captcha').style.display = 'none';
         });
 
         function ligarRobo() { socket.emit('comando_direto', { modo: 'ligar_robo' }); }
